@@ -306,15 +306,13 @@
     </div>
     <div class="content-row">
       <div class="video-panel">
-        <video controls src="videos/13.mp4">
-          <div class="video-placeholder"><span>▶</span><p>Video 13</p><p>videos/13.mp4</p></div>
-        </video>
+        <iframe src="case13.html" style="width:100%;height:100%;border:none;min-height:280px;"></iframe>
       </div>
       <div class="explanation-panel">
         <h3>Explanation</h3>
-        <p>In this scenario, Agent BLUE and Agent RED are navigating in a shared environment. Observe how Agent BLUE's movement and decisions affect the trajectory and behavior of Agent RED during the highlighted time step window.</p>
+        <p>During timesteps 40–63, RED is sweeping in a wide arc toward its goal and passes close to YELLOW, who has already settled near its own destination. Since the robots can't physically see each other, RED relies heavily on messages from YELLOW through the communication network — giving it roughly 50% of its attention — to avoid a collision with the nearest neighbor.</p>
         <br>
-        <p>Consider factors such as proximity, direction of movement, and whether Agent RED altered its path in response to Agent BLUE's actions.</p>
+        <p>Around timestep 64, RED clears past YELLOW and approaches its own goal, which happens to be right next to where GREEN is parked (only about 0.27 apart — barely a gap between two robot bodies). RED's attention shifts sharply to GREEN, climbing from ~14% to 68% by the end of the episode, because GREEN is now the one it needs to avoid bumping into as it squeezes into its final position. In short, RED always listens most to whichever teammate poses the biggest collision risk at that moment.</p>
       </div>
     </div>
     <div class="question-box">

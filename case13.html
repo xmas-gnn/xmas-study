@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Navigation — Case 13</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0b14;
+    color: #c8c2b6;
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 24px;
+  }
+  h1 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    background: linear-gradient(90deg, #3b82f6, #eab308, #22c55e, #ef4444);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 4px;
+  }
+  .subtitle { font-size: 11px; color: #6b7280; margin-bottom: 20px; letter-spacing: 0.03em; }
+  .canvas-wrap {
+    position: relative;
+    border: 1px solid #1e2036;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  }
+  canvas { display: block; background: #0d0e1a; }
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  button {
+    font-family: inherit;
+    font-size: 12px;
+    padding: 6px 14px;
+    border: 1px solid #2a2d3e;
+    border-radius: 5px;
+    background: #13152a;
+    color: #c8c2b6;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+  }
+  button:hover { border-color: #3b82f6; color: #fff; }
+  button.active { border-color: #3b82f6; background: rgba(59,130,246,0.15); color: #3b82f6; }
+  input[type=range] {
+    width: 220px;
+    accent-color: #3b82f6;
+    height: 4px;
+  }
+  .info { font-size: 11px; color: #6b7280; }
+  .info span { color: #c8c2b6; font-weight: 600; }
+  .legend {
+    display: flex;
+    gap: 18px;
+    margin-top: 14px;
+    font-size: 11px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.2);
+  }
+  .toggle-row {
+    display: flex; gap: 8px; margin-top: 10px; align-items: center;
+  }
+  .toggle-row label { font-size: 11px; color: #6b7280; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+  .toggle-row input { accent-color: #3b82f6; }
+</style>
+</head>
+<body>
+<h1>Agent Navigation Replay</h1>
+<div class="subtitle">Case 13 · 4 agents · 72 timesteps · radius 0.1</div>
+
+<div class="canvas-wrap">
+  <canvas id="c" width="640" height="640"></canvas>
+</div>
+
+<div class="controls">
+  <button id="playBtn" onclick="togglePlay()">▶ Play</button>
+  <button onclick="stepBack()">◂ Step</button>
+  <button onclick="stepFwd()">Step ▸</button>
+  <input type="range" id="slider" min="0" max="71" value="0" oninput="seekTo(+this.value)">
+  <div class="info">t = <span id="tLabel">0</span> / 71</div>
+</div>
+
+<div class="controls" style="margin-top:8px">
+  <span class="info">Speed:</span>
+  <button onclick="setSpeed(0.5)">0.5×</button>
+  <button class="active" id="sp1" onclick="setSpeed(1)">1×</button>
+  <button onclick="setSpeed(2)">2×</button>
+  <button onclick="setSpeed(4)">4×</button>
+</div>
+
+<div class="toggle-row">
+  <label><input type="checkbox" id="trailToggle" checked onchange="draw()"> Trails</label>
+  <label><input type="checkbox" id="goalToggle" checked onchange="draw()"> Goals</label>
+  <label><input type="checkbox" id="gridToggle" checked onchange="draw()"> Grid</label>
+  <label><input type="checkbox" id="interpToggle" checked> Interpolate</label>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Agent 0</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#eab308"></div>Agent 1</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div>Agent 2</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div>Agent 3</div>
+</div>
+
+<script>
+const DATA=[[[-0.45956,0.45566,0.02506,0.03319],[-0.45675,0.46095,0.03432,0.07154],[-0.45381,0.46905,0.03188,0.09916],[-0.45122,0.47882,0.02717,0.1133],[-0.44916,0.4891,0.0208,0.11464],[-0.44775,0.49893,0.01303,0.10658],[-0.44711,0.50767,0.0042,0.09242],[-0.44723,0.515,-0.00415,0.07582],[-0.44795,0.52086,-0.0099,0.05988],[-0.44904,0.52538,-0.01322,0.04531],[-0.45036,0.52864,-0.01536,0.03163],[-0.45182,0.5307,-0.01674,0.01854],[-0.45335,0.53163,-0.01714,0.00632],[-0.45475,0.53157,-0.01468,-0.00426],[-0.45571,0.53065,-0.00873,-0.01314],[-0.45602,0.52902,-0.00065,-0.02064],[-0.45553,0.52679,0.00833,-0.02686],[-0.45424,0.52408,0.01736,-0.03164],[-0.45217,0.52105,0.0259,-0.03465],[-0.44937,0.51788,0.03378,-0.03552],[-0.44589,0.51477,0.04098,-0.03406],[-0.44182,0.51192,0.04744,-0.03048],[-0.43721,0.50947,0.05305,-0.02557],[-0.43215,0.50748,0.0578,-0.02047],[-0.42671,0.50589,0.06185,-0.0162],[-0.42092,0.5046,0.06547,-0.01345],[-0.41482,0.50345,0.06899,-0.01252],[-0.40837,0.50227,0.07295,-0.01327],[-0.40151,0.50095,0.07784,-0.01537],[-0.39418,0.49938,0.08338,-0.01855],[-0.38633,0.49747,0.08907,-0.02248],[-0.37799,0.49519,0.09449,-0.02683],[-0.36918,0.4925,0.09952,-0.03136],[-0.35994,0.48941,0.10434,-0.03591],[-0.35025,0.4859,0.10934,-0.04045],[-0.34006,0.48199,0.11512,-0.04502],[-0.32926,0.47765,0.12242,-0.04982],[-0.31769,0.47284,0.13166,-0.05525],[-0.30514,0.46749,0.14325,-0.06156],[-0.2914,0.46151,0.15749,-0.06892],[-0.27622,0.45479,0.17427,-0.07741],[-0.25942,0.44726,0.19277,-0.08688],[-0.24094,0.43883,0.21163,-0.09696],[-0.22081,0.4295,0.2297,-0.10712],[-0.19914,0.41925,0.24624,-0.11722],[-0.1761,0.40808,0.2609,-0.1276],[-0.15185,0.39594,0.27383,-0.13851],[-0.12651,0.38278,0.28529,-0.15011],[-0.10023,0.36853,0.29548,-0.16241],[-0.07309,0.35316,0.3045,-0.17501],[-0.04521,0.33663,0.3124,-0.18799],[-0.01669,0.31888,0.31919,-0.20174],[0.01238,0.29983,0.32484,-0.21668],[0.04187,0.27934,0.32921,-0.23312],[0.07165,0.2573,0.3317,-0.2509],[0.10145,0.23363,0.33075,-0.26898],[0.13083,0.2084,0.32438,-0.28598],[0.15931,0.18175,0.31239,-0.30121],[0.1865,0.15384,0.29704,-0.31453],[0.2123,0.12483,0.28137,-0.32625],[0.23677,0.09483,0.26717,-0.3368],[0.26,0.06396,0.25361,-0.34621],[0.28184,0.03232,0.23719,-0.35427],[0.30178,3e-05,0.21375,-0.36097],[0.3191,-0.03279,0.18181,-0.36653],[0.33309,-0.06606,0.14225,-0.37124],[0.34309,-0.09972,0.09553,-0.37526],[0.34847,-0.13369,0.04198,-0.3786],[0.34888,-0.16793,-0.01429,-0.3813],[0.34439,-0.20237,-0.06771,-0.38345],[0.33548,-0.23698,-0.11452,-0.38515],[0.32298,-0.27172,-0.15108,-0.38634]],[[0.07627,-0.16838,-0.06253,-0.09587],[0.06741,-0.18136,-0.11633,-0.16848],[0.05423,-0.19981,-0.16152,-0.22317],[0.03752,-0.22235,-0.19777,-0.2641],[0.01807,-0.24795,-0.22537,-0.29464],[-0.00339,-0.27584,-0.24485,-0.31758],[-0.02607,-0.30547,-0.25556,-0.33497],[-0.04889,-0.33639,-0.2527,-0.34788],[-0.06931,-0.36812,-0.21393,-0.35489],[-0.08364,-0.39892,-0.13184,-0.3358],[-0.09164,-0.42371,-0.06747,-0.24528],[-0.09549,-0.43995,-0.03037,-0.14812],[-0.09689,-0.44871,-0.00821,-0.07189],[-0.09699,-0.45226,0.00238,-0.02323],[-0.09665,-0.45302,0.0045,-0.00113],[-0.09638,-0.45281,0.00223,0.00411],[-0.09632,-0.45245,2e-05,0.00399],[-0.09632,-0.45208,-1e-05,0.00405],[-0.09627,-0.45171,0.00076,0.00428],[-0.09618,-0.45133,0.00112,0.0042],[-0.0961,-0.45096,0.00079,0.00392],[-0.09608,-0.45064,-0.00015,0.00352],[-0.09617,-0.45036,-0.0014,0.00288],[-0.09636,-0.45016,-0.0024,0.00182],[-0.09659,-0.45009,-0.00269,0.00032],[-0.09682,-0.45015,-0.00249,-0.00118],[-0.09702,-0.45033,-0.00213,-0.00249],[-0.0972,-0.45062,-0.00191,-0.00353],[-0.09738,-0.45099,-0.00192,-0.00435],[-0.09756,-0.45142,-0.00212,-0.00507],[-0.09777,-0.45192,-0.00248,-0.00567],[-0.09802,-0.45246,-0.00294,-0.00616],[-0.09832,-0.45303,-0.00343,-0.00657],[-0.09865,-0.45365,-0.00391,-0.00701],[-0.09905,-0.45432,-0.00467,-0.00758],[-0.09954,-0.45504,-0.00584,-0.00825],[-0.10017,-0.45582,-0.00754,-0.00894],[-0.10099,-0.45665,-0.00993,-0.00934],[-0.10208,-0.45747,-0.01312,-0.00902],[-0.10349,-0.4582,-0.01699,-0.00755],[-0.10525,-0.45872,-0.0209,-0.00492],[-0.10739,-0.45892,-0.02521,-0.0009],[-0.10971,-0.4588,-0.026,0.00239],[-0.11205,-0.45834,-0.02604,0.00654],[-0.11439,-0.45739,-0.02601,0.01254],[-0.11665,-0.45578,-0.02452,0.02065],[-0.11864,-0.4531,-0.02097,0.03434],[-0.11978,-0.44889,-0.00856,0.05289],[-0.11876,-0.44346,0.02125,0.06406],[-0.11488,-0.43814,0.05412,0.05676],[-0.1092,-0.43453,0.06756,0.03169],[-0.1038,-0.43339,0.05633,0.00311],[-0.1,-0.43426,0.03503,-0.01601],[-0.09794,-0.43611,0.01696,-0.0228],[-0.09706,-0.43808,0.00617,-0.02142],[-0.09677,-0.43974,0.00165,-0.01698],[-0.09663,-0.44104,0.00154,-0.0132],[-0.09638,-0.44215,0.00349,-0.01187],[-0.09594,-0.44326,0.00546,-0.01263],[-0.09537,-0.44448,0.00684,-0.01396],[-0.09477,-0.44578,0.00656,-0.01476],[-0.09426,-0.44714,0.00523,-0.01517],[-0.09395,-0.44853,0.00249,-0.01565],[-0.094,-0.44991,-0.00207,-0.01514],[-0.09439,-0.45116,-0.00535,-0.0133],[-0.09489,-0.45223,-0.00571,-0.01117],[-0.09528,-0.45312,-0.00358,-0.00924],[-0.09543,-0.45384,-0.00072,-0.00743],[-0.09532,-0.45448,0.0022,-0.00686],[-0.09499,-0.45518,0.0043,-0.00823],[-0.09456,-0.45607,0.00504,-0.01074],[-0.09413,-0.45718,0.00472,-0.01309]],[[-0.58832,0.18363,0.0609,-0.08626],[-0.57998,0.1718,0.10858,-0.1541],[-0.56798,0.15472,0.14571,-0.20763],[-0.55321,0.13349,0.17335,-0.24991],[-0.53654,0.10901,0.19112,-0.28313],[-0.51905,0.08199,0.19587,-0.30878],[-0.50203,0.05302,0.18572,-0.32841],[-0.48682,0.02257,0.16066,-0.34324],[-0.47427,-0.00898,0.12878,-0.35428],[-0.46412,-0.04135,0.10488,-0.36232],[-0.4552,-0.07424,0.09611,-0.36693],[-0.44676,-0.10695,0.09271,-0.36181],[-0.43964,-0.1361,0.07232,-0.30492],[-0.43489,-0.1572,0.04306,-0.1992],[-0.43213,-0.16954,0.02443,-0.1061],[-0.43048,-0.17515,0.0152,-0.04043],[-0.42941,-0.17666,0.01034,-0.00487],[-0.42868,-0.17635,0.00688,0.00753],[-0.42822,-0.17562,0.00421,0.00848],[-0.42797,-0.17502,0.0021,0.00567],[-0.42787,-0.1747,0.00066,0.0026],[-0.42786,-0.1746,-0.00011,0.0004],[-0.42788,-0.17464,-0.00038,-0.00094],[-0.42792,-0.17477,-0.00037,-0.00169],[-0.42794,-0.17494,-0.00018,-0.00197],[-0.42793,-0.17511,0.00015,-0.00192],[-0.4279,-0.17527,0.0005,-0.00175],[-0.42784,-0.17542,0.0008,-0.00158],[-0.42775,-0.17556,0.00103,-0.00145],[-0.42765,-0.17568,0.00113,-0.0014],[-0.42755,-0.1758,0.00119,-0.00133],[-0.42744,-0.17592,0.00127,-0.0012],[-0.42732,-0.17601,0.00136,-0.00103],[-0.42719,-0.1761,0.00147,-0.00084],[-0.42705,-0.17616,0.00161,-0.00065],[-0.4269,-0.17621,0.0016,-0.00049],[-0.42676,-0.17624,0.00157,-0.00031],[-0.42662,-0.17626,0.00162,-9e-05],[-0.42646,-0.17625,0.00172,0.00018],[-0.4263,-0.17621,0.00185,0.00049],[-0.42613,-0.17615,0.00197,0.00082],[-0.42594,-0.17606,0.00205,0.0011],[-0.42576,-0.17594,0.00207,0.00137],[-0.42557,-0.17581,0.00208,0.00145],[-0.42537,-0.17566,0.00237,0.00181],[-0.42514,-0.17547,0.00258,0.00224],[-0.42491,-0.17526,0.0025,0.00236],[-0.42471,-0.17507,0.0021,0.00204],[-0.42455,-0.17494,0.00161,0.00109],[-0.42442,-0.17495,0.00137,-0.00057],[-0.42426,-0.17505,0.00194,-0.00147],[-0.42403,-0.17513,0.00291,-0.0005],[-0.42373,-0.17506,0.00351,0.00129],[-0.42346,-0.17497,0.00286,0.00084],[-0.42329,-0.17507,0.00135,-0.00202],[-0.42325,-0.17544,5e-05,-0.00508],[-0.42328,-0.17603,-0.00054,-0.00737],[-0.42331,-0.17679,-0.00027,-0.00899],[-0.42327,-0.17762,0.00073,-0.00939],[-0.42312,-0.17843,0.0022,-0.00875],[-0.42285,-0.17912,0.00336,-0.00716],[-0.42254,-0.17962,0.00343,-0.00475],[-0.42229,-0.17985,0.00256,-0.00143],[-0.42211,-0.17971,0.00166,0.00313],[-0.42196,-0.17912,0.00176,0.00814],[-0.42175,-0.17818,0.00255,0.01171],[-0.42153,-0.17706,0.00235,0.01273],[-0.42141,-0.17594,0.00081,0.01233],[-0.42146,-0.17489,-0.00119,0.01138],[-0.42171,-0.17396,-0.00351,0.00975],[-0.42229,-0.17332,-0.00795,0.00578],[-0.42337,-0.17318,-0.01397,-0.00057]],[[-0.08509,0.53228,0.05029,-0.02536],[-0.07809,0.52838,0.09152,-0.05224],[-0.06777,0.52204,0.12633,-0.07962],[-0.05472,0.51325,0.1543,-0.10658],[-0.03965,0.50218,0.17407,-0.13133],[-0.0236,0.48914,0.18036,-0.15168],[-0.00786,0.47458,0.17218,-0.16673],[0.00661,0.45892,0.15508,-0.1777],[0.01946,0.4424,0.13669,-0.18639],[0.03081,0.42518,0.12076,-0.19383],[0.04092,0.40735,0.1081,-0.20027],[0.05006,0.38897,0.09836,-0.20623],[0.0585,0.37004,0.09141,-0.21231],[0.06654,0.35051,0.0883,-0.21936],[0.07458,0.33026,0.08996,-0.22779],[0.08303,0.3092,0.09571,-0.23722],[0.09216,0.28724,0.10441,-0.24725],[0.10219,0.26438,0.11487,-0.25749],[0.1132,0.2406,0.12614,-0.26758],[0.12522,0.21594,0.1373,-0.27724],[0.13816,0.19045,0.14696,-0.28605],[0.15168,0.16429,0.1518,-0.293],[0.16504,0.13771,0.1469,-0.29654],[0.17739,0.111,0.13238,-0.29683],[0.18822,0.08435,0.11426,-0.29588],[0.19752,0.05773,0.0978,-0.29565],[0.20554,0.03105,0.0849,-0.29679],[0.21262,0.00421,0.07551,-0.29908],[0.219,-0.02287,0.06859,-0.3017],[0.22478,-0.0501,0.06201,-0.30301],[0.22986,-0.07729,0.05374,-0.30166],[0.23412,-0.10426,0.04401,-0.29861],[0.2375,-0.13102,0.03436,-0.29671],[0.24005,-0.15775,0.02541,-0.29715],[0.24185,-0.18467,0.01725,-0.30019],[0.24292,-0.212,0.00925,-0.3054],[0.24326,-0.23987,0.00093,-0.3118],[0.2428,-0.26833,-0.00803,-0.31839],[0.2415,-0.29737,-0.01775,-0.32479],[0.23927,-0.32699,-0.02824,-0.33124],[0.23601,-0.3572,-0.04027,-0.33788],[0.2315,-0.38798,-0.05494,-0.34412],[0.22547,-0.41922,-0.0731,-0.34857],[0.2176,-0.45068,-0.09456,-0.35009],[0.20762,-0.4822,-0.11903,-0.3503],[0.19533,-0.51379,-0.14545,-0.35132],[0.18054,-0.54551,-0.17364,-0.35295],[0.1631,-0.5773,-0.20386,-0.35335],[0.14296,-0.60875,-0.23385,-0.3476],[0.12027,-0.63906,-0.26109,-0.33129],[0.09538,-0.66769,-0.28434,-0.31155],[0.06872,-0.69452,-0.30226,-0.29134],[0.04077,-0.71908,-0.31472,-0.26369],[0.01193,-0.74058,-0.32323,-0.22651],[-0.01758,-0.7585,-0.33015,-0.18544],[-0.04765,-0.7726,-0.33617,-0.14226],[-0.07815,-0.78243,-0.34016,-0.0927],[-0.10879,-0.78729,-0.34065,-0.0347],[-0.13934,-0.78687,-0.3388,0.02443],[-0.16971,-0.78139,-0.33679,0.07914],[-0.19998,-0.77129,-0.33612,0.12872],[-0.23028,-0.75702,-0.33687,0.17339],[-0.26064,-0.73907,-0.33771,0.21257],[-0.29094,-0.71793,-0.33601,0.24602],[-0.32073,-0.6941,-0.32856,0.2741],[-0.34948,-0.66803,-0.31483,0.29746],[-0.37672,-0.64011,-0.29666,0.31668],[-0.40156,-0.6107,-0.26561,0.3319],[-0.42117,-0.58019,-0.19404,0.34245],[-0.43303,-0.54904,-0.10062,0.34801],[-0.43702,-0.5178,-0.01622,0.34669],[-0.43476,-0.48795,0.04574,0.32408]]];
+
+const COLORS = ['#3b82f6','#eab308','#22c55e','#ef4444'];
+const COLORS_DIM = ['rgba(59,130,246,0.25)','rgba(234,179,8,0.25)','rgba(34,197,94,0.25)','rgba(239,68,68,0.25)'];
+const COLORS_TRAIL = ['rgba(59,130,246,0.5)','rgba(234,179,8,0.5)','rgba(34,197,94,0.5)','rgba(239,68,68,0.5)'];
+
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+
+// World bounds: [-1, 1] x [-1, 1]  → 2.0 x 2.0 environment
+const WORLD_MIN = -1.0, WORLD_MAX = 1.0;
+const WORLD_SIZE = WORLD_MAX - WORLD_MIN;
+const PAD = 50; // pixel padding for axis labels
+const DRAW_W = W - 2*PAD, DRAW_H = H - 2*PAD;
+const AGENT_R = 0.1;
+const VEL_SCALE = 0.8; // visual scale for velocity line
+
+let t = 0, playing = false, speed = 1, animT = 0, lastTime = 0;
+
+function w2px(wx, wy) {
+  const px = PAD + ((wx - WORLD_MIN) / WORLD_SIZE) * DRAW_W;
+  const py = PAD + ((WORLD_MAX - wy) / WORLD_SIZE) * DRAW_H; // flip y
+  return [px, py];
+}
+
+function worldToPx(dist) {
+  return (dist / WORLD_SIZE) * DRAW_W;
+}
+
+function lerp(a, b, f) { return a + (b - a) * f; }
+
+function getAgentState(agent, time) {
+  const idx = Math.floor(time);
+  const frac = time - idx;
+  if (idx >= DATA[agent].length - 1) return DATA[agent][DATA[agent].length - 1];
+  if (!document.getElementById('interpToggle').checked || frac === 0) return DATA[agent][idx];
+  const a = DATA[agent][idx], b = DATA[agent][idx + 1];
+  return [lerp(a[0],b[0],frac), lerp(a[1],b[1],frac), lerp(a[2],b[2],frac), lerp(a[3],b[3],frac)];
+}
+
+function drawGrid() {
+  if (!document.getElementById('gridToggle').checked) return;
+  ctx.strokeStyle = '#1a1c32';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([]);
+  // grid lines at 0.5 intervals
+  for (let v = WORLD_MIN; v <= WORLD_MAX + 0.01; v += 0.5) {
+    const [x1,y1] = w2px(v, WORLD_MIN);
+    const [x2,y2] = w2px(v, WORLD_MAX);
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+    const [x3,y3] = w2px(WORLD_MIN, v);
+    const [x4,y4] = w2px(WORLD_MAX, v);
+    ctx.beginPath(); ctx.moveTo(x3,y3); ctx.lineTo(x4,y4); ctx.stroke();
+  }
+  // axes
+  ctx.strokeStyle = '#2a2d48';
+  ctx.lineWidth = 1.5;
+  const [ox1,oy1] = w2px(0, WORLD_MIN);
+  const [ox2,oy2] = w2px(0, WORLD_MAX);
+  ctx.beginPath(); ctx.moveTo(ox1,oy1); ctx.lineTo(ox2,oy2); ctx.stroke();
+  const [ax1,ay1] = w2px(WORLD_MIN, 0);
+  const [ax2,ay2] = w2px(WORLD_MAX, 0);
+  ctx.beginPath(); ctx.moveTo(ax1,ay1); ctx.lineTo(ax2,ay2); ctx.stroke();
+
+  // axis labels
+  ctx.fillStyle = '#4b5563';
+  ctx.font = '10px JetBrains Mono';
+  ctx.textAlign = 'center';
+  for (let v = WORLD_MIN; v <= WORLD_MAX + 0.01; v += 0.5) {
+    const [lx, ly] = w2px(v, WORLD_MIN);
+    ctx.fillText(v.toFixed(1), lx, ly + 14);
+    const [lx2, ly2] = w2px(WORLD_MIN, v);
+    ctx.textAlign = 'right';
+    ctx.fillText(v.toFixed(1), lx2 - 6, ly2 + 4);
+    ctx.textAlign = 'center';
+  }
+  // Environment size label
+  ctx.fillStyle = '#6b7280';
+  ctx.font = '11px JetBrains Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText('2.0 × 2.0 environment  [−1.0, 1.0]', W/2, H - 6);
+  ctx.fillText('X', W/2, PAD + DRAW_H + 30);
+  ctx.save();
+  ctx.translate(12, PAD + DRAW_H/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillText('Y', 0, 0);
+  ctx.restore();
+}
+
+function drawTrails(upToTime) {
+  if (!document.getElementById('trailToggle').checked) return;
+  const maxT = Math.floor(upToTime);
+  for (let a = 0; a < 4; a++) {
+    ctx.strokeStyle = COLORS_TRAIL[a];
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    for (let i = 0; i <= maxT && i < DATA[a].length; i++) {
+      const [px, py] = w2px(DATA[a][i][0], DATA[a][i][1]);
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    // interpolated end
+    if (upToTime > maxT && maxT < DATA[a].length - 1) {
+      const s = getAgentState(a, upToTime);
+      const [px, py] = w2px(s[0], s[1]);
+      ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+    // start marker
+    const [sx, sy] = w2px(DATA[a][0][0], DATA[a][0][1]);
+    ctx.fillStyle = COLORS_DIM[a];
+    ctx.beginPath(); ctx.arc(sx, sy, 4, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#4b5563';
+    ctx.font = '9px JetBrains Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText('start', sx, sy - 8);
+  }
+}
+
+function drawGoals() {
+  if (!document.getElementById('goalToggle').checked) return;
+  // Use last-timestep position as approx goal
+  const goals = DATA.map(a => { const last = a[a.length-1]; return [last[0], last[1]]; });
+  for (let a = 0; a < 4; a++) {
+    const [gx, gy] = w2px(goals[a][0], goals[a][1]);
+    const r = 6;
+    ctx.strokeStyle = COLORS[a];
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([3, 3]);
+    // cross marker
+    ctx.beginPath(); ctx.moveTo(gx-r, gy-r); ctx.lineTo(gx+r, gy+r); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(gx+r, gy-r); ctx.lineTo(gx-r, gy+r); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#4b5563';
+    ctx.font = '9px JetBrains Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText('goal', gx, gy - 10);
+  }
+}
+
+function drawAgent(a, time) {
+  const state = getAgentState(a, time);
+  const [px, py, vx, vy] = state;
+  const [cx, cy] = w2px(px, py);
+  const r = worldToPx(AGENT_R);
+
+  // Agent body - filled circle with glow
+  ctx.shadowColor = COLORS[a];
+  ctx.shadowBlur = 8;
+  ctx.fillStyle = COLORS[a];
+  ctx.globalAlpha = 0.3;
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
+  ctx.globalAlpha = 1;
+  ctx.shadowBlur = 0;
+
+  ctx.strokeStyle = COLORS[a];
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.stroke();
+
+  // Center dot
+  ctx.fillStyle = COLORS[a];
+  ctx.beginPath(); ctx.arc(cx, cy, 2, 0, Math.PI*2); ctx.fill();
+
+  // Velocity/heading line
+  const vel = Math.sqrt(vx*vx + vy*vy);
+  if (vel > 0.001) {
+    const heading = Math.atan2(vy, vx);
+    const lineLen = worldToPx(vel * VEL_SCALE);
+    // Note: screen y is flipped, so negate vy component
+    const ex = cx + Math.cos(heading) * lineLen;
+    const ey = cy - Math.sin(heading) * lineLen; // flip y
+
+    ctx.strokeStyle = COLORS[a];
+    ctx.lineWidth = 2;
+    ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(ex, ey); ctx.stroke();
+
+    // Arrowhead
+    const angle = Math.atan2(ey - cy, ex - cx);
+    const aLen = 5;
+    ctx.fillStyle = COLORS[a];
+    ctx.beginPath();
+    ctx.moveTo(ex, ey);
+    ctx.lineTo(ex - aLen*Math.cos(angle - 0.35), ey - aLen*Math.sin(angle - 0.35));
+    ctx.lineTo(ex - aLen*Math.cos(angle + 0.35), ey - aLen*Math.sin(angle + 0.35));
+    ctx.closePath(); ctx.fill();
+  }
+
+  // Agent label
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 11px JetBrains Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText(a, cx, cy + r + 14);
+
+  // Velocity readout
+  ctx.fillStyle = '#6b7280';
+  ctx.font = '9px JetBrains Mono';
+  ctx.fillText('v=' + vel.toFixed(3), cx, cy + r + 25);
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  drawGrid();
+  drawTrails(animT);
+  drawGoals();
+  for (let a = 0; a < 4; a++) drawAgent(a, animT);
+
+  // Timestep display
+  ctx.fillStyle = 'rgba(10,11,20,0.8)';
+  ctx.fillRect(PAD, PAD, 100, 28);
+  ctx.fillStyle = '#c8c2b6';
+  ctx.font = '13px JetBrains Mono';
+  ctx.textAlign = 'left';
+  ctx.fillText('t = ' + Math.floor(animT), PAD + 8, PAD + 18);
+
+  document.getElementById('slider').value = Math.floor(animT);
+  document.getElementById('tLabel').textContent = Math.floor(animT);
+}
+
+function animate(now) {
+  if (!playing) return;
+  if (!lastTime) lastTime = now;
+  const dt = (now - lastTime) / 1000;
+  lastTime = now;
+  animT += dt * speed * 4; // base rate ~4 timesteps/sec
+  if (animT >= 71) { animT = 71; playing = false; updatePlayBtn(); }
+  draw();
+  if (playing) requestAnimationFrame(animate);
+}
+
+function togglePlay() {
+  playing = !playing;
+  if (playing) {
+    if (animT >= 71) animT = 0;
+    lastTime = 0;
+    requestAnimationFrame(animate);
+  }
+  updatePlayBtn();
+}
+
+function updatePlayBtn() {
+  document.getElementById('playBtn').textContent = playing ? '⏸ Pause' : '▶ Play';
+  document.getElementById('playBtn').classList.toggle('active', playing);
+}
+
+function seekTo(val) { animT = val; draw(); }
+function stepFwd() { animT = Math.min(71, Math.floor(animT) + 1); draw(); }
+function stepBack() { animT = Math.max(0, Math.floor(animT) - 1); draw(); }
+
+function setSpeed(s) {
+  speed = s;
+  document.querySelectorAll('.controls button').forEach(b => {
+    if (b.textContent.includes('×')) b.classList.remove('active');
+  });
+  event.target.classList.add('active');
+}
+
+draw();
+</script>
+</body>
+</html>
