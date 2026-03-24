@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//home/uchiwuwu/.ssh/**)",
+      "Bash(ssh-keygen -t ed25519 -C \"xmasgnn@gmail.com\" -f ~/.ssh/id_ed25519_xmas -N \"\")",
+      "Bash(ssh -T git@github-xmas)",
+      "Bash(git remote:*)",
+      "Bash(git push:*)"
+    ]
+  }
+}

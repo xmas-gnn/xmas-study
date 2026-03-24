@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Behavior Survey</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    header {
+      background: #1e3a5f;
+      color: white;
+      padding: 14px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header h1 { font-size: 1.1rem; }
+    .progress-text { font-size: 0.85rem; opacity: 0.8; }
+
+    /* ── Progress bar ── */
+    .progress-bar-wrap { background: #d0d7e2; height: 6px; }
+    .progress-bar-fill { background: #4a90e2; height: 6px; transition: width 0.3s; }
+
+    /* ── Main layout ── */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* ── Pages ── */
+    .page { display: none; flex-direction: column; gap: 20px; }
+    .page.active { display: flex; }
+
+    /* ── Section label ── */
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #4a90e2;
+    }
+    .page-title {
+      font-size: 1.4rem;
+      color: #1e3a5f;
+      margin-top: 4px;
+    }
+
+    /* ── Content row: video + explanation ── */
+    .content-row {
+      display: flex;
+      gap: 20px;
+      flex: 1;
+    }
+
+    .video-panel {
+      flex: 1;
+      background: #000;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 280px;
+    }
+    .video-panel video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .video-placeholder {
+      color: #666;
+      text-align: center;
+      padding: 20px;
+      background: #1a1a2e;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 280px;
+    }
+    .video-placeholder span { font-size: 2rem; }
+    .video-placeholder p { color: #aaa; font-size: 0.85rem; }
+
+    .explanation-panel {
+      flex: 1;
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      overflow-y: auto;
+      max-height: 320px;
+    }
+    .explanation-panel h3 {
+      font-size: 0.9rem;
+      color: #888;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .explanation-panel p { color: #333; line-height: 1.6; font-size: 0.95rem; }
+
+    /* Subjective: two explanations side by side */
+    .explanation-ab {
+      display: flex;
+      gap: 12px;
+      flex: 1;
+    }
+    .explanation-ab .explanation-panel { flex: 1; }
+    .explanation-ab .explanation-panel h3 {
+      color: white;
+      background: #4a90e2;
+      margin: -20px -20px 12px -20px;
+      padding: 8px 20px;
+      border-radius: 10px 10px 0 0;
+      font-size: 0.85rem;
+    }
+    .explanation-ab .explanation-panel.b h3 { background: #e2714a; }
+
+    /* ── Question box ── */
+    .question-box {
+      background: white;
+      border-radius: 10px;
+      padding: 20px 24px;
+    }
+    .question-box h3 {
+      font-size: 1rem;
+      color: #1e3a5f;
+      margin-bottom: 14px;
+    }
+    .choices {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .choice-btn {
+      padding: 10px 20px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: #333;
+      transition: all 0.15s;
+    }
+    .choice-btn:hover { border-color: #4a90e2; color: #4a90e2; }
+    .choice-btn.selected { border-color: #4a90e2; background: #eaf2fb; color: #1e3a5f; font-weight: bold; }
+
+    /* ── Nav buttons ── */
+    .nav-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+    }
+    .nav-btn {
+      padding: 11px 28px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .nav-btn.back { background: #ddd; color: #333; }
+    .nav-btn.back:hover { background: #ccc; }
+    .nav-btn.next { background: #4a90e2; color: white; }
+    .nav-btn.next:hover { background: #357abd; }
+    .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .nav-btn.submit { background: #27ae60; color: white; }
+    .nav-btn.submit:hover { background: #1e8449; }
+
+    /* ── Intro page ── */
+    .intro-card {
+      background: white;
+      border-radius: 12px;
+      padding: 50px 40px;
+      max-width: 680px;
+      margin: auto;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .intro-card h2 { font-size: 1.8rem; color: #1e3a5f; margin-bottom: 16px; }
+    .intro-card p { color: #555; line-height: 1.7; margin-bottom: 14px; }
+    .intro-card ul { text-align: left; color: #444; line-height: 2; padding-left: 20px; margin-bottom: 20px; }
+    .start-btn {
+      margin-top: 10px;
+      padding: 14px 40px;
+      background: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.05rem;
+      cursor: pointer;
+    }
+    .start-btn:hover { background: #357abd; }
+
+    /* ── Thank you page ── */
+    .thanks-card {
+      background: white;
+      border-radius: 12px;
+      padding: 60px 40px;
+      max-width: 500px;
+      margin: auto;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .thanks-card .icon { font-size: 3rem; margin-bottom: 16px; }
+    .thanks-card h2 { font-size: 1.6rem; color: #1e3a5f; margin-bottom: 12px; }
+    .thanks-card p { color: #555; line-height: 1.7; }
+
+    @media (max-width: 768px) {
+      .content-row { flex-direction: column; }
+      .explanation-ab { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Agent Behavior Survey</h1>
+  <span class="progress-text" id="progressText"></span>
+</header>
+<div class="progress-bar-wrap">
+  <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+</div>
+
+<main>
+
+  <!-- ══════════════════════════════════════════
+       PAGE 0 — INTRO
+  ══════════════════════════════════════════ -->
+  <div class="page active" id="page-0">
+    <div class="intro-card">
+      <h2>Agent Behavior Survey</h2>
+      <p>Thank you for participating in this study. You will watch short video clips of multi-agent scenarios and answer questions about them.</p>
+      <p>The survey is divided into two parts:</p>
+      <ul>
+        <li><strong>Objective Assessment</strong> — predict or assess agent behavior</li>
+        <li><strong>Subjective Assessment</strong> — compare two explanations (A vs B)</li>
+      </ul>
+      <p>Please watch each video carefully before answering. There are <strong>8 questions</strong> in total.</p>
+      <button class="start-btn" onclick="goTo(1)">Start Survey →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PAGE 1 — DEMO CASE (video 35)
+  ══════════════════════════════════════════ -->
+  <div class="page" id="page-1">
+    <div>
+      <div class="section-label">Demo Case Version B</div>
+      <div class="page-title">Familiarize yourself with the format</div>
+    </div>
+    <div class="content-row">
+      <div class="video-panel">
+        <video controls src="videos/35.mp4">
+          <div class="video-placeholder"><span>▶</span><p>Video 35</p><p>videos/35.mp4</p></div>
+        </video>
+      </div>
+      <div class="explanation-panel">
+        <h3>Explanation</h3>
+        <p>This is a demo case to help you understand the format of the survey. Watch the video on the left and read this explanation. In this scenario, multiple agents navigate toward their goals while interacting with each other. Pay attention to how agents influence each other's movement and decisions.</p>
+        <br>
+        <p>In the following pages, you will be asked questions based on the video and explanation provided. Use the <strong>Next</strong> button to proceed and <strong>Back</strong> to revisit previous pages.</p>
+      </div>
+    </div>
+    <div class="question-box">
+      <h3>Demo Question: Which agent reaches its goal first?</h3>
+      <div class="choices" data-key="demo">
+        <button class="choice-btn" onclick="selectChoice(this, 'demo', 'Agent BLUE')">Agent BLUE</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'demo', 'Agent RED')">Agent RED</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'demo', 'Agent YELLOW')">Agent YELLOW</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'demo', 'Agent GREEN')">Agent GREEN</button>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="nav-btn back" onclick="goTo(0)">← Back</button>
+      <button class="nav-btn next" onclick="goTo(2)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PAGE 2 — OBJECTIVE Q1 (video 13)
+       Agent BLUE's influence on agent RED
+  ══════════════════════════════════════════ -->
+  <div class="page" id="page-2">
+    <div>
+      <div class="section-label">Objective Assessment — Question 1 of 4</div>
+      <div class="page-title">Agent BLUE's influence on Agent RED</div>
+    </div>
+    <div class="content-row">
+      <div class="video-panel">
+        <video controls src="videos/13.mp4">
+          <div class="video-placeholder"><span>▶</span><p>Video 13</p><p>videos/13.mp4</p></div>
+        </video>
+      </div>
+      <div class="explanation-panel">
+        <h3>Explanation</h3>
+        <p>In this scenario, Agent BLUE and Agent RED are navigating in a shared environment. Observe how Agent BLUE's movement and decisions affect the trajectory and behavior of Agent RED during the highlighted time step window.</p>
+        <br>
+        <p>Consider factors such as proximity, direction of movement, and whether Agent RED altered its path in response to Agent BLUE's actions.</p>
+      </div>
+    </div>
+    <div class="question-box">
+      <h3>Based on the explanation, what is Agent BLUE's influence on Agent RED during the time step window?</h3>
+      <div class="choices" data-key="q1">
+        <button class="choice-btn" onclick="selectChoice(this, 'q1', 'Strong positive influence')">Strong positive influence</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q1', 'Weak positive influence')">Weak positive influence</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q1', 'No influence')">No influence</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q1', 'Weak negative influence')">Weak negative influence</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q1', 'Strong negative influence')">Strong negative influence</button>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="nav-btn back" onclick="goTo(1)">← Back</button>
+      <button class="nav-btn next" onclick="goTo(3)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PAGE 3 — OBJECTIVE Q2 (video 96)
+       Predict Agent RED trajectory
+  ══════════════════════════════════════════ -->
+  <div class="page" id="page-3">
+    <div>
+      <div class="section-label">Objective Assessment — Question 2 of 4</div>
+      <div class="page-title">Predict Agent RED's Trajectory</div>
+    </div>
+    <div class="content-row">
+      <div class="video-panel">
+        <video controls src="videos/96.mp4">
+          <div class="video-placeholder"><span>▶</span><p>Video 96</p><p>videos/96.mp4</p></div>
+        </video>
+      </div>
+      <div class="explanation-panel">
+        <h3>Explanation</h3>
+        <p>Agent RED is navigating from its starting position toward its goal. Based on the current trajectory and surrounding agents, predict which path Agent RED will take to reach its goal.</p>
+        <br>
+        <p>Consider Agent RED's current heading, speed, and the positions of nearby agents when making your prediction.</p>
+      </div>
+    </div>
+    <div class="question-box">
+      <h3>Predict Agent RED's trajectory from start to goal:</h3>
+      <div class="choices" data-key="q2">
+        <button class="choice-btn" onclick="selectChoice(this, 'q2', 'Path A – direct route')">Path A – direct route</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q2', 'Path B – detour left')">Path B – detour left</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q2', 'Path C – detour right')">Path C – detour right</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q2', 'Path D – stops short of goal')">Path D – stops short of goal</button>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="nav-btn back" onclick="goTo(2)">← Back</button>
+      <button class="nav-btn next" onclick="goTo(4)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PAGE 4 — OBJECTIVE Q3 (video 46)
+       Will YELLOW & GREEN yield?
+  ══════════════════════════════════════════ -->
+  <div class="page" id="page-4">
+    <div>
+      <div class="section-label">Objective Assessment — Question 3 of 4</div>
+      <div class="page-title">Will Agent YELLOW &amp; GREEN Yield?</div>
+    </div>
+    <div class="content-row">
+      <div class="video-panel">
+        <video controls src="videos/46.mp4">
+          <div class="video-placeholder"><span>▶</span><p>Video 46</p><p>videos/46.mp4</p></div>
+        </video>
+      </div>
+      <div class="explanation-panel">
+        <h3>Explanation</h3>
+        <p>Agent YELLOW and Agent GREEN are on a collision course while each attempting to reach their respective goals. Based on their current trajectories and the explanation provided, assess whether they will yield to avoid a collision.</p>
+        <br>
+        <p>Yielding behavior involves one or both agents slowing down, stopping, or altering their path to allow the other to pass safely.</p>
+      </div>
+    </div>
+    <div class="question-box">
+      <h3>Will Agent YELLOW &amp; GREEN yield to avoid collision and reach their goals?</h3>
+      <div class="choices" data-key="q3">
+        <button class="choice-btn" onclick="selectChoice(this, 'q3', 'Both will yield')">Both will yield</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q3', 'Only YELLOW yields')">Only YELLOW yields</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q3', 'Only GREEN yields')">Only GREEN yields</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q3', 'Neither will yield')">Neither will yield</button>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="nav-btn back" onclick="goTo(3)">← Back</button>
+      <button class="nav-btn next" onclick="goTo(5)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PAGE 5 — OBJECTIVE Q4 (video 1)
+       Will GREEN reach destination in time?
+  ══════════════════════════════════════════ -->
+  <div class="page" id="page-5">
+    <div>
+      <div class="section-label">Objective Assessment — Question 4 of 4</div>
+      <div class="page-title">Will Agent GREEN Reach Its Destination in Time?</div>
+    </div>
+    <div class="content-row">
+      <div class="video-panel">
+        <video controls src="videos/1.mp4">
+          <div class="video-placeholder"><span>▶</span><p>Video 1</p><p>videos/1.mp4</p></div>
+        </video>
+      </div>
+      <div class="explanation-panel">
+        <h3>Explanation</h3>
+        <p>Agent GREEN is navigating toward its destination within a limited execution time window. Based on the current position, speed, and obstacles, assess whether Agent GREEN will successfully reach its destination before time runs out.</p>
+        <br>
+        <p>Take into account any delays caused by interactions with other agents or environmental constraints.</p>
+      </div>
+    </div>
+    <div class="question-box">
+      <h3>Will Agent GREEN reach its destination before the execution time runs out?</h3>
+      <div class="choices" data-key="q4">
+        <button class="choice-btn" onclick="selectChoice(this, 'q4', 'Yes')">Yes</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q4', 'No')">No</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q4', 'Uncertain')">Uncertain</button>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="nav-btn back" onclick="goTo(4)">← Back</button>
+      <button class="nav-btn next" onclick="goTo(6)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PAGE 6 — SUBJECTIVE Q1 (video 61)
+       Which explanation is more useful?
+  ══════════════════════════════════════════ -->
+  <div class="page" id="page-6">
+    <div>
+      <div class="section-label">Subjective Assessment — Question 1 of 3</div>
+      <div class="page-title">Which Explanation Contains More Useful Information?</div>
+    </div>
+    <div class="content-row">
+      <div class="video-panel">
+        <video controls src="videos/61.mp4">
+          <div class="video-placeholder"><span>▶</span><p>Video 61</p><p>videos/61.mp4</p></div>
+        </video>
+      </div>
+      <div class="explanation-ab">
+        <div class="explanation-panel">
+          <h3>Explanation A</h3>
+          <p>Agent BLUE approached from the northwest corridor at t=5, causing Agent RED to recalculate its path. The influence score between BLUE and RED was 0.82 during steps 5–9, indicating a strong causal relationship. RED decelerated by 40% and deviated 15° from its original heading.</p>
+        </div>
+        <div class="explanation-panel b">
+          <h3>Explanation B</h3>
+          <p>Agent BLUE moved toward Agent RED, and RED responded by slowing down and changing direction slightly. This shows that BLUE had a notable effect on RED's behavior during this part of the simulation.</p>
+        </div>
+      </div>
+    </div>
+    <div class="question-box">
+      <h3>Which explanation contains more useful information?</h3>
+      <div class="choices" data-key="q5">
+        <button class="choice-btn" onclick="selectChoice(this, 'q5', 'A')">Explanation A</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q5', 'B')">Explanation B</button>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="nav-btn back" onclick="goTo(5)">← Back</button>
+      <button class="nav-btn next" onclick="goTo(7)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PAGE 7 — SUBJECTIVE Q2 (video 74)
+       Which explanation is more satisfying?
+  ══════════════════════════════════════════ -->
+  <div class="page" id="page-7">
+    <div>
+      <div class="section-label">Subjective Assessment — Question 2 of 3</div>
+      <div class="page-title">Which Explanation Is More Satisfying?</div>
+    </div>
+    <div class="content-row">
+      <div class="video-panel">
+        <video controls src="videos/74.mp4">
+          <div class="video-placeholder"><span>▶</span><p>Video 74</p><p>videos/74.mp4</p></div>
+        </video>
+      </div>
+      <div class="explanation-ab">
+        <div class="explanation-panel">
+          <h3>Explanation A</h3>
+          <p>At timestep 12, Agent YELLOW detected Agent GREEN within a 2-unit radius. YELLOW's avoidance protocol activated, reducing speed by 30% and steering right by 20°. GREEN simultaneously adjusted leftward, resulting in a coordinated pass with 0.5-unit clearance.</p>
+        </div>
+        <div class="explanation-panel b">
+          <h3>Explanation B</h3>
+          <p>Agent YELLOW and Agent GREEN were heading toward each other. YELLOW moved to the right and GREEN moved to the left, so they managed to pass each other without colliding and continued toward their goals.</p>
+        </div>
+      </div>
+    </div>
+    <div class="question-box">
+      <h3>Which explanation is more satisfying?</h3>
+      <div class="choices" data-key="q6">
+        <button class="choice-btn" onclick="selectChoice(this, 'q6', 'A')">Explanation A</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q6', 'B')">Explanation B</button>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="nav-btn back" onclick="goTo(6)">← Back</button>
+      <button class="nav-btn next" onclick="goTo(8)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PAGE 8 — SUBJECTIVE Q3 (video 90)
+       Which explanation is more helpful?
+  ══════════════════════════════════════════ -->
+  <div class="page" id="page-8">
+    <div>
+      <div class="section-label">Subjective Assessment — Question 3 of 3</div>
+      <div class="page-title">Which Explanation Is More Helpful for Understanding?</div>
+    </div>
+    <div class="content-row">
+      <div class="video-panel">
+        <video controls src="videos/90.mp4">
+          <div class="video-placeholder"><span>▶</span><p>Video 90</p><p>videos/90.mp4</p></div>
+        </video>
+      </div>
+      <div class="explanation-ab">
+        <div class="explanation-panel">
+          <h3>Explanation A</h3>
+          <p>Agent GREEN's remaining path length was 8.3 units at t=20, with an average speed of 0.6 units/step and 15 steps remaining — insufficient to cover the distance. Obstacles at t=22 caused a further 2-step delay, making goal completion statistically unlikely (p=0.12).</p>
+        </div>
+        <div class="explanation-panel b">
+          <h3>Explanation B</h3>
+          <p>Agent GREEN still had a long way to go near the end of the simulation. It was moving slowly and encountered some obstacles, which made it hard for it to reach the destination before time ran out.</p>
+        </div>
+      </div>
+    </div>
+    <div class="question-box">
+      <h3>Which explanation is more helpful for your understanding of the situation?</h3>
+      <div class="choices" data-key="q7">
+        <button class="choice-btn" onclick="selectChoice(this, 'q7', 'A')">Explanation A</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q7', 'B')">Explanation B</button>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="nav-btn back" onclick="goTo(7)">← Back</button>
+      <button class="nav-btn next submit" onclick="submitSurvey()">Submit Survey ✓</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PAGE 9 — THANK YOU
+  ══════════════════════════════════════════ -->
+  <div class="page" id="page-9">
+    <div class="thanks-card">
+      <div class="icon">✅</div>
+      <h2>Thank you!</h2>
+      <p>Your responses have been submitted successfully. We appreciate your participation in this study.</p>
+    </div>
+  </div>
+
+</main>
+
+<!-- Hidden Formspree submission form -->
+<form id="formspree-form" action="https://formspree.io/f/xlgpqlwq" method="POST" style="display:none">
+  <input type="hidden" name="_subject" value="New Survey Response – Version B">
+  <input type="hidden" name="version" value="B">
+  <input type="hidden" name="demo"   id="f-demo">
+  <input type="hidden" name="q1_blue_influence"  id="f-q1">
+  <input type="hidden" name="q2_red_trajectory"  id="f-q2">
+  <input type="hidden" name="q3_yield"           id="f-q3">
+  <input type="hidden" name="q4_green_time"      id="f-q4">
+  <input type="hidden" name="q5_useful"          id="f-q5">
+  <input type="hidden" name="q6_satisfying"      id="f-q6">
+  <input type="hidden" name="q7_helpful"         id="f-q7">
+</form>
+
+<script>
+  const TOTAL_PAGES = 9; // 0 = intro, 9 = thanks
+  let currentPage = 0;
+  const answers = {};
+
+  function goTo(n) {
+    document.getElementById('page-' + currentPage).classList.remove('active');
+    currentPage = n;
+    document.getElementById('page-' + n).classList.add('active');
+    updateProgress();
+    window.scrollTo(0, 0);
+  }
+
+  function updateProgress() {
+    const questionPages = TOTAL_PAGES - 1; // pages 1–8
+    const done = Math.max(0, currentPage - 1);
+    const pct = currentPage === 0 ? 0
+               : currentPage >= TOTAL_PAGES ? 100
+               : Math.round((done / (questionPages - 1)) * 100);
+
+    document.getElementById('progressBar').style.width = pct + '%';
+
+    if (currentPage === 0 || currentPage >= TOTAL_PAGES) {
+      document.getElementById('progressText').textContent = '';
+    } else {
+      document.getElementById('progressText').textContent =
+        'Page ' + currentPage + ' of ' + (TOTAL_PAGES - 1);
+    }
+  }
+
+  function selectChoice(btn, key, value) {
+    // Deselect siblings
+    btn.closest('.choices').querySelectorAll('.choice-btn')
+      .forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    answers[key] = value;
+  }
+
+  function submitSurvey() {
+    // Copy answers into hidden form
+    document.getElementById('f-demo').value = answers['demo'] || '';
+    document.getElementById('f-q1').value   = answers['q1']   || '';
+    document.getElementById('f-q2').value   = answers['q2']   || '';
+    document.getElementById('f-q3').value   = answers['q3']   || '';
+    document.getElementById('f-q4').value   = answers['q4']   || '';
+    document.getElementById('f-q5').value   = answers['q5']   || '';
+    document.getElementById('f-q6').value   = answers['q6']   || '';
+    document.getElementById('f-q7').value   = answers['q7']   || '';
+
+    const form = document.getElementById('formspree-form');
+    const data = new FormData(form);
+
+    fetch(form.action, {
+      method: 'POST',
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    }).then(res => {
+      goTo(9);
+    }).catch(() => {
+      goTo(9); // still show thanks even if network fails
+    });
+  }
+
+  updateProgress();
+</script>
+
+</body>
+</html>
