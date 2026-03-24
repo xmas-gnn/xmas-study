@@ -6,6 +6,9 @@
       "Bash(ssh -T git@github-xmas)",
       "Bash(git remote:*)",
       "Bash(git push:*)"
+    ],
+    "additionalDirectories": [
+      "/home/uchiwuwu/xmas-study"
     ]
   }
 }

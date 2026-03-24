@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <title>Survey</title>
   <script>
-    const version = Math.random() < 0.5 ? 'survey-a.html' : 'survey-b.html';
+    const versions = ['survey-a.html', 'survey-b.html', 'survey-c.html'];
+    const version = versions[Math.floor(Math.random() * versions.length)];
     window.location.replace(version);
   </script>
 </head>
