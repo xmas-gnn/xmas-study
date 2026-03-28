@@ -14,8 +14,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 100vh;
-    padding: 24px;
+    height: 100vh;
+    overflow: hidden;
+    padding: 8px;
+    gap: 4px;
   }
   .canvas-wrap {
     position: relative;
@@ -23,13 +25,17 @@
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-  canvas { display: block; background: #0d0e1a; }
+  canvas { display: block; background: #0d0e1a; max-height: 100%; max-width: 100%; width: auto; height: auto; }
   .controls {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-top: 16px;
     flex-wrap: wrap;
     justify-content: center;
   }
@@ -57,7 +63,6 @@
   .legend {
     display: flex;
     gap: 18px;
-    margin-top: 14px;
     font-size: 11px;
   }
   .legend-item { display: flex; align-items: center; gap: 5px; }
@@ -67,7 +72,7 @@
     border: 1.5px solid rgba(255,255,255,0.2);
   }
   .toggle-row {
-    display: flex; gap: 8px; margin-top: 10px; align-items: center;
+    display: flex; gap: 8px; align-items: center;
   }
   .toggle-row label { font-size: 11px; color: #6b7280; cursor: pointer; display: flex; align-items: center; gap: 4px; }
   .toggle-row input { accent-color: #3b82f6; }
@@ -87,7 +92,7 @@
   <div class="info">t = <span id="tLabel">0</span> / 185</div>
 </div>
 
-<div class="controls" style="margin-top:8px">
+<div class="controls">
   <span class="info">Speed:</span>
   <button onclick="setSpeed(0.5)">0.5×</button>
   <button class="active" id="sp1" onclick="setSpeed(1)">1×</button>
