@@ -75,7 +75,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 280px;
+      min-height: 500px;
     }
     .video-panel video {
       width: 100%;
@@ -94,7 +94,7 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      min-height: 280px;
+      min-height: 500px;
     }
     .video-placeholder span { font-size: 2rem; }
     .video-placeholder p { color: #aaa; font-size: 0.85rem; }
@@ -105,7 +105,7 @@
       border-radius: 10px;
       padding: 20px;
       overflow-y: auto;
-      max-height: 320px;
+      max-height: 500px;
     }
     .explanation-panel h3 {
       font-size: 0.9rem;
@@ -306,13 +306,13 @@
     </div>
     <div class="content-row">
       <div class="video-panel">
-        <iframe src="case13.html" style="width:100%;height:100%;border:none;min-height:280px;"></iframe>
+        <iframe src="case13.html" style="width:100%;height:100%;border:none;min-height:500px;"></iframe>
       </div>
       <div class="explanation-panel">
         <h3>Explanation</h3>
-        <p>During timesteps 40–63, RED is sweeping in a wide arc toward its goal and passes close to YELLOW, who has already settled near its own destination. Since the robots can't physically see each other, RED relies heavily on messages from YELLOW through the communication network — giving it roughly 50% of its attention — to avoid a collision with the nearest neighbor.</p>
+        <p>During timesteps 40–63, RED is sweeping in a wide arc toward its goal and passes close to YELLOW, who has already settled near its own destination. Since the robots can't physically see each other, RED relies heavily on messages from YELLOW through the communication network — giving it roughly half of its attention — to avoid a collision with the nearest neighbor.</p>
         <br>
-        <p>Around timestep 64, RED clears past YELLOW and approaches its own goal, which happens to be right next to where GREEN is parked (only about 0.27 apart — barely a gap between two robot bodies). RED's attention shifts sharply to GREEN, climbing from ~14% to 68% by the end of the episode, because GREEN is now the one it needs to avoid bumping into as it squeezes into its final position. In short, RED always listens most to whichever teammate poses the biggest collision risk at that moment.</p>
+        <p>Around timestep 64, RED clears past YELLOW and approaches its own goal, which happens to be right next to where GREEN is parked — barely a gap between two robot bodies. RED's attention shifts sharply to GREEN, climbing from a small fraction to over two-thirds by the end of the episode, because GREEN is now the one it needs to avoid bumping into as it squeezes into its final position. In short, RED always listens most to whichever teammate poses the biggest collision risk at that moment.</p>
       </div>
     </div>
     <div class="question-box">
@@ -342,15 +342,13 @@
     </div>
     <div class="content-row">
       <div class="video-panel">
-        <video controls src="videos/96.mp4">
-          <div class="video-placeholder"><span>▶</span><p>Video 96</p><p>videos/96.mp4</p></div>
-        </video>
+        <iframe src="case96.html" style="width:100%;height:100%;border:none;min-height:500px;"></iframe>
       </div>
       <div class="explanation-panel">
         <h3>Explanation</h3>
-        <p>Agent RED is navigating from its starting position toward its goal. Based on the current trajectory and surrounding agents, predict which path Agent RED will take to reach its goal.</p>
+        <p>RED's attention splits into two clear phases. Early on, RED focuses heavily on BLUE — the closest neighbor as RED begins moving upward from the bottom of the environment. But by around the quarter-mark of the episode, RED's attention shifts almost entirely to GREEN, which commands roughly nine-tenths of RED's attention for the rest of the journey. GREEN settles into its own goal position early and stays parked there for the remainder of the episode, sitting a moderate distance from where RED needs to end up.</p>
         <br>
-        <p>Consider Agent RED's current heading, speed, and the positions of nearby agents when making your prediction.</p>
+        <p>The fact that RED locks onto GREEN so strongly and for so long suggests RED's path needs to navigate carefully around where GREEN is parked. GREEN sits above and to the right of RED's goal, close enough that RED can't simply take a straight line from start to finish without accounting for GREEN's presence. The sustained, dominant attention to a single stationary neighbor is a signature of a long approach toward a destination where a teammate is nearby — RED is continuously adjusting its route based on GREEN's position to avoid conflict while still reaching its own goal.</p>
       </div>
     </div>
     <div class="question-box">
@@ -379,15 +377,13 @@
     </div>
     <div class="content-row">
       <div class="video-panel">
-        <video controls src="videos/46.mp4">
-          <div class="video-placeholder"><span>▶</span><p>Video 46</p><p>videos/46.mp4</p></div>
-        </video>
+        <iframe src="case46.html" style="width:100%;height:100%;border:none;min-height:500px;"></iframe>
       </div>
       <div class="explanation-panel">
         <h3>Explanation</h3>
-        <p>Agent YELLOW and Agent GREEN are on a collision course while each attempting to reach their respective goals. Based on their current trajectories and the explanation provided, assess whether they will yield to avoid a collision.</p>
+        <p>In the final moments shown, YELLOW is accelerating and splits its attention between BLUE and GREEN — but around timestep 29, GREEN overtakes BLUE as YELLOW's top priority. YELLOW had been focused primarily on BLUE (which is nearby and on a converging path), but as GREEN closes in from the opposite direction, YELLOW's attention to GREEN surges from a minor fraction to becoming its dominant signal. Despite this late shift, YELLOW is still moving fast and has only just begun to "listen" to GREEN.</p>
         <br>
-        <p>Yielding behavior involves one or both agents slowing down, stopping, or altering their path to allow the other to pass safely.</p>
+        <p>GREEN, meanwhile, is also moving fast and paying most of its attention to RED for much of the approach. It only pivots to focusing on YELLOW in the last few timesteps — rising from a small share to becoming its dominant signal around timestep 26. The key concern here is that both agents recognized each other late: each was primarily watching a different teammate for most of the approach, and only switched attention to each other in the final moments, while both were already traveling at high speed on converging paths.</p>
       </div>
     </div>
     <div class="question-box">
@@ -416,15 +412,13 @@
     </div>
     <div class="content-row">
       <div class="video-panel">
-        <video controls src="videos/1.mp4">
-          <div class="video-placeholder"><span>▶</span><p>Video 1</p><p>videos/1.mp4</p></div>
-        </video>
+        <iframe src="case1.html" style="width:100%;height:100%;border:none;min-height:500px;"></iframe>
       </div>
       <div class="explanation-panel">
         <h3>Explanation</h3>
-        <p>Agent GREEN is navigating toward its destination within a limited execution time window. Based on the current position, speed, and obstacles, assess whether Agent GREEN will successfully reach its destination before time runs out.</p>
+        <p>GREEN starts the episode heading in roughly the right direction, with BLUE as its primary attention target. But as it approaches the middle of the environment around timestep 12, YELLOW — who has already settled at its own goal — becomes GREEN's overwhelming focus, commanding over 80% of its attention for the rest of the episode. GREEN's heading visibly diverges from the direction of its goal: its goal lies below and to the left, but GREEN curves upward and to the right instead, moving away from its destination with each step.</p>
         <br>
-        <p>Take into account any delays caused by interactions with other agents or environmental constraints.</p>
+        <p>What's notable is that GREEN's distance to its own goal actually grows steadily after the early timesteps — it gets farther, not closer. GREEN appears so consumed by its need to coordinate with YELLOW that its trajectory bends around YELLOW's position rather than pushing through toward its own objective. </p>
       </div>
     </div>
     <div class="question-box">

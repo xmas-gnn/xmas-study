@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Navigation — Case 46</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0b14;
+    color: #c8c2b6;
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 24px;
+  }
+  .canvas-wrap {
+    position: relative;
+    border: 1px solid #1e2036;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  }
+  canvas { display: block; background: #0d0e1a; }
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  button {
+    font-family: inherit;
+    font-size: 12px;
+    padding: 6px 14px;
+    border: 1px solid #2a2d3e;
+    border-radius: 5px;
+    background: #13152a;
+    color: #c8c2b6;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+  }
+  button:hover { border-color: #3b82f6; color: #fff; }
+  button.active { border-color: #3b82f6; background: rgba(59,130,246,0.15); color: #3b82f6; }
+  input[type=range] {
+    width: 220px;
+    accent-color: #3b82f6;
+    height: 4px;
+  }
+  .info { font-size: 11px; color: #6b7280; }
+  .info span { color: #c8c2b6; font-weight: 600; }
+  .legend {
+    display: flex;
+    gap: 18px;
+    margin-top: 14px;
+    font-size: 11px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.2);
+  }
+  .toggle-row {
+    display: flex; gap: 8px; margin-top: 10px; align-items: center;
+  }
+  .toggle-row label { font-size: 11px; color: #6b7280; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+  .toggle-row input { accent-color: #3b82f6; }
+</style>
+</head>
+<body>
+
+<div class="canvas-wrap">
+  <canvas id="c" width="640" height="640"></canvas>
+</div>
+
+<div class="controls">
+  <button id="playBtn" onclick="togglePlay()">&#9654; Play</button>
+  <button onclick="stepBack()">&#9666; Step</button>
+  <button onclick="stepFwd()">Step &#9656;</button>
+  <input type="range" id="slider" min="0" max="30" value="0" oninput="seekTo(+this.value)">
+  <div class="info">t = <span id="tLabel">0</span> / 30</div>
+</div>
+
+<div class="controls" style="margin-top:8px">
+  <span class="info">Speed:</span>
+  <button onclick="setSpeed(0.5)">0.5&times;</button>
+  <button class="active" id="sp1" onclick="setSpeed(1)">1&times;</button>
+  <button onclick="setSpeed(2)">2&times;</button>
+  <button onclick="setSpeed(4)">4&times;</button>
+</div>
+
+<div class="toggle-row">
+  <label><input type="checkbox" id="trailToggle" checked onchange="draw()"> Trails</label>
+  <label><input type="checkbox" id="goalToggle" checked onchange="draw()"> Goals</label>
+  <label><input type="checkbox" id="gridToggle" checked onchange="draw()"> Grid</label>
+  <label><input type="checkbox" id="interpToggle" checked> Interpolate</label>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Agent 0</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#eab308"></div>Agent 1</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div>Agent 2</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div>Agent 3</div>
+</div>
+
+<script>
+const DATA=[[[-0.20138,-0.32075,-0.09328,-0.08765],[-0.21401,-0.33268,-0.16384,-0.15493],[-0.23196,-0.34958,-0.21721,-0.20418],[-0.25391,-0.36999,-0.25736,-0.2382],[-0.2789,-0.39278,-0.28777,-0.26063],[-0.3062,-0.41698,-0.31111,-0.27303],[-0.33527,-0.44158,-0.32889,-0.27356],[-0.36565,-0.46485,-0.34188,-0.25098],[-0.39687,-0.48335,-0.34953,-0.18281],[-0.42828,-0.49413,-0.34862,-0.08829],[-0.45822,-0.49717,-0.32472,-0.00659],[-0.48243,-0.49501,-0.24109,0.03927],[-0.49836,-0.49103,-0.14506,0.04683],[-0.50714,-0.48748,-0.07372,0.03565],[-0.51122,-0.48514,-0.03123,0.0212],[-0.51284,-0.48391,-0.01134,0.00985],[-0.51345,-0.48347,-0.00453,0.00256],[-0.51381,-0.48347,-0.00372,-0.00132],[-0.51423,-0.48368,-0.00515,-0.00287],[-0.51482,-0.48395,-0.00716,-0.00312],[-0.51558,-0.48421,-0.00912,-0.00269],[-0.51647,-0.48441,-0.01033,-0.00195],[-0.51727,-0.48461,-0.00812,-0.00248],[-0.51753,-0.48506,-0.00024,-0.00617],[-0.51713,-0.48567,0.00669,-0.00717],[-0.51638,-0.48606,0.00916,-0.00288],[-0.51556,-0.48602,0.00904,0.00212],[-0.51475,-0.4857,0.00909,0.00422],[-0.51384,-0.48542,0.01063,0.00266],[-0.51297,-0.48525,0.00911,0.00148],[-0.51256,-0.48498,0.00231,0.00381]],[[0.17945,-0.43246,0.01641,0.04164],[0.18234,-0.42611,0.03998,0.0851],[0.1875,-0.41601,0.06606,0.12575],[0.19495,-0.40261,0.09121,0.1604],[0.20438,-0.38664,0.11152,0.18598],[0.21515,-0.36904,0.12368,0.20028],[0.22627,-0.3509,0.1235,0.20231],[0.23635,-0.33324,0.10636,0.19314],[0.2438,-0.31695,0.07084,0.17494],[0.24705,-0.30279,0.0189,0.14851],[0.24527,-0.2914,-0.03913,0.11566],[0.23858,-0.28302,-0.09195,0.08181],[0.22772,-0.27742,-0.13513,0.05231],[0.21341,-0.27416,-0.17078,0.0283],[0.19613,-0.27275,-0.20274,0.00923],[0.17606,-0.27287,-0.23302,-0.00658],[0.15339,-0.27432,-0.26139,-0.02084],[0.12834,-0.2769,-0.28683,-0.03256],[0.10122,-0.2804,-0.30857,-0.04203],[0.07241,-0.28444,-0.32592,-0.04634],[0.04238,-0.28778,-0.33746,-0.0325],[0.0119,-0.28794,-0.33933,0.01349],[-0.01787,-0.28264,-0.32643,0.08159],[-0.04583,-0.27135,-0.30277,0.14746],[-0.07181,-0.25482,-0.2817,0.20179],[-0.09652,-0.2341,-0.27099,0.24442],[-0.12088,-0.21014,-0.2705,0.27712],[-0.14543,-0.1837,-0.27383,0.3021],[-0.17044,-0.15537,-0.28005,0.32107],[-0.19616,-0.12562,-0.28859,0.33534],[-0.22267,-0.09479,-0.29753,0.34621]],[[0.55873,0.5887,-0.04274,0.0052],[0.55278,0.5895,-0.07785,0.0107],[0.54399,0.59081,-0.10759,0.01639],[0.53278,0.59265,-0.13289,0.02262],[0.51953,0.59514,-0.15448,0.03017],[0.50449,0.59844,-0.17339,0.03991],[0.48782,0.60281,-0.19123,0.0528],[0.4695,0.60854,-0.20962,0.06914],[0.4495,0.61586,-0.22856,0.08735],[0.42785,0.62476,-0.24662,0.10476],[0.40469,0.63501,-0.26253,0.1185],[0.38032,0.64596,-0.27504,0.12323],[0.35503,0.65634,-0.28384,0.11128],[0.32906,0.6643,-0.29095,0.07702],[0.30245,0.66806,-0.29805,0.02414],[0.27518,0.6666,-0.30544,-0.03632],[0.24727,0.65985,-0.31252,-0.09441],[0.21877,0.64831,-0.31873,-0.1451],[0.18978,0.63275,-0.32382,-0.1868],[0.16039,0.61395,-0.3279,-0.21995],[0.13069,0.59262,-0.33105,-0.24553],[0.10078,0.56938,-0.33292,-0.26455],[0.07083,0.54473,-0.3327,-0.27858],[0.04097,0.519,-0.33131,-0.28948],[0.01119,0.49245,-0.33076,-0.29778],[-0.01862,0.46531,-0.33145,-0.30352],[-0.04853,0.4378,-0.33267,-0.30663],[-0.07851,0.41018,-0.33343,-0.30715],[-0.10852,0.38262,-0.33344,-0.30573],[-0.13847,0.3553,-0.33236,-0.30236],[-0.16819,0.32842,-0.32915,-0.29693]],[[-0.06415,0.04414,0.0705,0.03826],[-0.05421,0.0492,0.13049,0.06525],[-0.03958,0.05655,0.17854,0.0898],[-0.02129,0.06617,0.21555,0.11553],[-0.00032,0.078,0.24183,0.13928],[0.02233,0.09141,0.25649,0.15388],[0.04563,0.10537,0.26011,0.15579],[0.06879,0.1188,0.25603,0.14595],[0.09183,0.13131,0.25588,0.13551],[0.11549,0.14345,0.26638,0.13459],[0.14046,0.15542,0.2831,0.13217],[0.16709,0.16621,0.30215,0.11375],[0.1954,0.17417,0.32088,0.07574],[0.22518,0.17759,0.3359,0.01924],[0.25604,0.17543,0.34622,-0.04565],[0.2875,0.16748,0.35125,-0.10963],[0.31889,0.15421,0.34764,-0.1665],[0.34922,0.13635,0.33157,-0.2144],[0.37744,0.11471,0.30455,-0.25335],[0.40271,0.09006,0.2689,-0.28424],[0.42425,0.06303,0.22458,-0.30837],[0.44112,0.03416,0.16884,-0.32696],[0.45216,0.00388,0.09968,-0.34118],[0.4567,-0.02748,0.02579,-0.35208],[0.45505,-0.05965,-0.04037,-0.36012],[0.4484,-0.09233,-0.09067,-0.36462],[0.43906,-0.12471,-0.11026,-0.3574],[0.43084,-0.15241,-0.08191,-0.28286],[0.42564,-0.17126,-0.04572,-0.17284],[0.42304,-0.18158,-0.0205,-0.08555],[0.42195,-0.18594,-0.00795,-0.02987]]];
+const GOALS=[[-0.51142,-0.48251],[-0.21486,0.3561],[-0.41052,0.01329],[0.42455,-0.18473]];
+const MAX_T=30;
+
+const COLORS = ['#3b82f6','#eab308','#22c55e','#ef4444'];
+const COLORS_DIM = ['rgba(59,130,246,0.25)','rgba(234,179,8,0.25)','rgba(34,197,94,0.25)','rgba(239,68,68,0.25)'];
+const COLORS_TRAIL = ['rgba(59,130,246,0.5)','rgba(234,179,8,0.5)','rgba(34,197,94,0.5)','rgba(239,68,68,0.5)'];
+
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+
+const WORLD_MIN = -1.0, WORLD_MAX = 1.0;
+const WORLD_SIZE = WORLD_MAX - WORLD_MIN;
+const PAD = 50;
+const DRAW_W = W - 2*PAD, DRAW_H = H - 2*PAD;
+const AGENT_R = 0.1;
+const VEL_SCALE = 0.8;
+
+let t = 0, playing = false, speed = 1, animT = 0, lastTime = 0;
+
+function w2px(wx, wy) {
+  const px = PAD + ((wx - WORLD_MIN) / WORLD_SIZE) * DRAW_W;
+  const py = PAD + ((WORLD_MAX - wy) / WORLD_SIZE) * DRAW_H;
+  return [px, py];
+}
+
+function worldToPx(dist) { return (dist / WORLD_SIZE) * DRAW_W; }
+function lerp(a, b, f) { return a + (b - a) * f; }
+
+function getAgentState(agent, time) {
+  const idx = Math.floor(time);
+  const frac = time - idx;
+  if (idx >= DATA[agent].length - 1) return DATA[agent][DATA[agent].length - 1];
+  if (!document.getElementById('interpToggle').checked || frac === 0) return DATA[agent][idx];
+  const a = DATA[agent][idx], b = DATA[agent][idx + 1];
+  return [lerp(a[0],b[0],frac), lerp(a[1],b[1],frac), lerp(a[2],b[2],frac), lerp(a[3],b[3],frac)];
+}
+
+function drawGrid() {
+  if (!document.getElementById('gridToggle').checked) return;
+  ctx.strokeStyle = '#1a1c32';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([]);
+  for (let v = WORLD_MIN; v <= WORLD_MAX + 0.01; v += 0.5) {
+    const [x1,y1] = w2px(v, WORLD_MIN);
+    const [x2,y2] = w2px(v, WORLD_MAX);
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+    const [x3,y3] = w2px(WORLD_MIN, v);
+    const [x4,y4] = w2px(WORLD_MAX, v);
+    ctx.beginPath(); ctx.moveTo(x3,y3); ctx.lineTo(x4,y4); ctx.stroke();
+  }
+  ctx.strokeStyle = '#2a2d48';
+  ctx.lineWidth = 1.5;
+  const [ox1,oy1] = w2px(0, WORLD_MIN);
+  const [ox2,oy2] = w2px(0, WORLD_MAX);
+  ctx.beginPath(); ctx.moveTo(ox1,oy1); ctx.lineTo(ox2,oy2); ctx.stroke();
+  const [ax1,ay1] = w2px(WORLD_MIN, 0);
+  const [ax2,ay2] = w2px(WORLD_MAX, 0);
+  ctx.beginPath(); ctx.moveTo(ax1,ay1); ctx.lineTo(ax2,ay2); ctx.stroke();
+  ctx.fillStyle = '#4b5563';
+  ctx.font = '10px JetBrains Mono';
+  ctx.textAlign = 'center';
+  for (let v = WORLD_MIN; v <= WORLD_MAX + 0.01; v += 0.5) {
+    const [lx, ly] = w2px(v, WORLD_MIN);
+    ctx.fillText(v.toFixed(1), lx, ly + 14);
+    const [lx2, ly2] = w2px(WORLD_MIN, v);
+    ctx.textAlign = 'right';
+    ctx.fillText(v.toFixed(1), lx2 - 6, ly2 + 4);
+    ctx.textAlign = 'center';
+  }
+  ctx.fillStyle = '#6b7280';
+  ctx.font = '11px JetBrains Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText('2.0 \u00d7 2.0 environment  [\u22121.0, 1.0]', W/2, H - 6);
+  ctx.fillText('X', W/2, PAD + DRAW_H + 30);
+  ctx.save();
+  ctx.translate(12, PAD + DRAW_H/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillText('Y', 0, 0);
+  ctx.restore();
+}
+
+function drawTrails(upToTime) {
+  if (!document.getElementById('trailToggle').checked) return;
+  const maxT = Math.floor(upToTime);
+  for (let a = 0; a < 4; a++) {
+    ctx.strokeStyle = COLORS_TRAIL[a];
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    for (let i = 0; i <= maxT && i < DATA[a].length; i++) {
+      const [px, py] = w2px(DATA[a][i][0], DATA[a][i][1]);
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    if (upToTime > maxT && maxT < DATA[a].length - 1) {
+      const s = getAgentState(a, upToTime);
+      const [px, py] = w2px(s[0], s[1]);
+      ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+    // start marker
+    const [sx, sy] = w2px(DATA[a][0][0], DATA[a][0][1]);
+    ctx.fillStyle = COLORS_DIM[a];
+    ctx.beginPath(); ctx.arc(sx, sy, 4, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#4b5563';
+    ctx.font = '9px JetBrains Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText('start', sx, sy - 8);
+  }
+}
+
+function drawGoals() {
+  if (!document.getElementById('goalToggle').checked) return;
+  for (let a = 0; a < 4; a++) {
+    const [gx, gy] = w2px(GOALS[a][0], GOALS[a][1]);
+    const r = 6;
+    ctx.strokeStyle = COLORS[a];
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(gx-r, gy-r); ctx.lineTo(gx+r, gy+r); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(gx+r, gy-r); ctx.lineTo(gx-r, gy+r); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#4b5563';
+    ctx.font = '9px JetBrains Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText('goal', gx, gy - 10);
+  }
+}
+
+function drawAgent(a, time) {
+  const state = getAgentState(a, time);
+  const [px, py, vx, vy] = state;
+  const [cx, cy] = w2px(px, py);
+  const r = worldToPx(AGENT_R);
+
+  ctx.shadowColor = COLORS[a];
+  ctx.shadowBlur = 8;
+  ctx.fillStyle = COLORS[a];
+  ctx.globalAlpha = 0.3;
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
+  ctx.globalAlpha = 1;
+  ctx.shadowBlur = 0;
+
+  ctx.strokeStyle = COLORS[a];
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.stroke();
+
+  ctx.fillStyle = COLORS[a];
+  ctx.beginPath(); ctx.arc(cx, cy, 2, 0, Math.PI*2); ctx.fill();
+
+  const vel = Math.sqrt(vx*vx + vy*vy);
+  if (vel > 0.001) {
+    const heading = Math.atan2(vy, vx);
+    const lineLen = worldToPx(vel * VEL_SCALE);
+    const ex = cx + Math.cos(heading) * lineLen;
+    const ey = cy - Math.sin(heading) * lineLen;
+
+    ctx.strokeStyle = COLORS[a];
+    ctx.lineWidth = 2;
+    ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(ex, ey); ctx.stroke();
+
+    const angle = Math.atan2(ey - cy, ex - cx);
+    const aLen = 5;
+    ctx.fillStyle = COLORS[a];
+    ctx.beginPath();
+    ctx.moveTo(ex, ey);
+    ctx.lineTo(ex - aLen*Math.cos(angle - 0.35), ey - aLen*Math.sin(angle - 0.35));
+    ctx.lineTo(ex - aLen*Math.cos(angle + 0.35), ey - aLen*Math.sin(angle + 0.35));
+    ctx.closePath(); ctx.fill();
+  }
+
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 11px JetBrains Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText(a, cx, cy + r + 14);
+
+  ctx.fillStyle = '#6b7280';
+  ctx.font = '9px JetBrains Mono';
+  ctx.fillText('v=' + vel.toFixed(3), cx, cy + r + 25);
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  drawGrid();
+  drawTrails(animT);
+  drawGoals();
+  for (let a = 0; a < 4; a++) drawAgent(a, animT);
+
+  ctx.fillStyle = 'rgba(10,11,20,0.8)';
+  ctx.fillRect(PAD, PAD, 100, 28);
+  ctx.fillStyle = '#c8c2b6';
+  ctx.font = '13px JetBrains Mono';
+  ctx.textAlign = 'left';
+  ctx.fillText('t = ' + Math.floor(animT), PAD + 8, PAD + 18);
+
+  document.getElementById('slider').value = Math.floor(animT);
+  document.getElementById('tLabel').textContent = Math.floor(animT);
+}
+
+function animate(now) {
+  if (!playing) return;
+  if (!lastTime) lastTime = now;
+  const dt = (now - lastTime) / 1000;
+  lastTime = now;
+  animT += dt * speed * 4;
+  if (animT >= MAX_T) { animT = MAX_T; playing = false; updatePlayBtn(); }
+  draw();
+  if (playing) requestAnimationFrame(animate);
+}
+
+function togglePlay() {
+  playing = !playing;
+  if (playing) {
+    if (animT >= MAX_T) animT = 0;
+    lastTime = 0;
+    requestAnimationFrame(animate);
+  }
+  updatePlayBtn();
+}
+
+function updatePlayBtn() {
+  document.getElementById('playBtn').textContent = playing ? '\u23f8 Pause' : '\u25b6 Play';
+  document.getElementById('playBtn').classList.toggle('active', playing);
+}
+
+function seekTo(val) { animT = val; draw(); }
+function stepFwd() { animT = Math.min(MAX_T, Math.floor(animT) + 1); draw(); }
+function stepBack() { animT = Math.max(0, Math.floor(animT) - 1); draw(); }
+
+function setSpeed(s) {
+  speed = s;
+  document.querySelectorAll('.controls button').forEach(b => {
+    if (b.textContent.includes('\u00d7')) b.classList.remove('active');
+  });
+  event.target.classList.add('active');
+}
+
+draw();
+</script>
+</body>
+</html>
