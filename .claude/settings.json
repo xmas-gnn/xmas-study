@@ -5,10 +5,15 @@
       "Bash(ssh-keygen -t ed25519 -C \"xmasgnn@gmail.com\" -f ~/.ssh/id_ed25519_xmas -N \"\")",
       "Bash(ssh -T git@github-xmas)",
       "Bash(git remote:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(head -5 grep -n \"video controls\\\\|35.mp4\" /home/uchiwuwu/xmas-study/survey-c.html)",
+      "Bash(grep -l \"speed = 1,\" /home/uchiwuwu/xmas-study/videos/case*.html)",
+      "Bash(grep -n \"speed = \" /home/uchiwuwu/xmas-study/videos/case*.html)",
+      "Bash(grep -n 'class=\"\"\"\"active\"\"\"\"' /home/uchiwuwu/xmas-study/videos/case*.html)"
     ],
     "additionalDirectories": [
-      "/home/uchiwuwu/xmas-study"
+      "/home/uchiwuwu/xmas-study",
+      "/home/uchiwuwu/xmas-study/videos"
     ]
   }
 }

@@ -95,9 +95,9 @@
 <div class="controls">
   <span class="info">Speed:</span>
   <button onclick="setSpeed(0.5)">0.5&times;</button>
-  <button class="active" id="sp1" onclick="setSpeed(1)">1&times;</button>
+  <button id="sp1" onclick="setSpeed(1)">1&times;</button>
   <button onclick="setSpeed(2)">2&times;</button>
-  <button onclick="setSpeed(4)">4&times;</button>
+  <button class="active" onclick="setSpeed(4)">4&times;</button>
 </div>
 
 <div class="toggle-row">
@@ -134,7 +134,7 @@ const DRAW_W = W - 2*PAD, DRAW_H = H - 2*PAD;
 const AGENT_R = 0.1;
 const VEL_SCALE = 0.8;
 
-let t = 0, playing = false, speed = 1, animT = 0, lastTime = 0;
+let t = 0, playing = false, speed = 4, animT = 0, lastTime = 0;
 
 function w2px(wx, wy) {
   const px = PAD + ((wx - WORLD_MIN) / WORLD_SIZE) * DRAW_W;

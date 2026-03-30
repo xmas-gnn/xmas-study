@@ -1,0 +1,378 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Navigation — Case 15</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0b14;
+    color: #c8c2b6;
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    padding: 8px;
+    gap: 4px;
+  }
+  h1 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    background: linear-gradient(90deg, #3b82f6, #eab308, #22c55e, #ef4444);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 4px;
+  }
+  .subtitle { font-size: 11px; color: #6b7280; margin-bottom: 20px; letter-spacing: 0.03em; }
+  .canvas-wrap {
+    position: relative;
+    border: 1px solid #1e2036;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  canvas { display: block; background: #0d0e1a; max-height: 100%; max-width: 100%; width: auto; height: auto; }
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  button {
+    font-family: inherit;
+    font-size: 12px;
+    padding: 6px 14px;
+    border: 1px solid #2a2d3e;
+    border-radius: 5px;
+    background: #13152a;
+    color: #c8c2b6;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+  }
+  button:hover { border-color: #3b82f6; color: #fff; }
+  button.active { border-color: #3b82f6; background: rgba(59,130,246,0.15); color: #3b82f6; }
+  input[type=range] {
+    width: 220px;
+    accent-color: #3b82f6;
+    height: 4px;
+  }
+  .info { font-size: 11px; color: #6b7280; }
+  .info span { color: #c8c2b6; font-weight: 600; }
+  .legend {
+    display: flex;
+    gap: 18px;
+    font-size: 11px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.2);
+  }
+  .toggle-row {
+    display: flex; gap: 8px; align-items: center;
+  }
+  .toggle-row label { font-size: 11px; color: #6b7280; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+  .toggle-row input { accent-color: #3b82f6; }
+</style>
+</head>
+<body>
+
+
+<div class="canvas-wrap">
+  <canvas id="c" width="640" height="640"></canvas>
+</div>
+
+<div class="controls">
+  <button id="playBtn" onclick="togglePlay()">▶ Play</button>
+  <button onclick="stepBack()">◂ Step</button>
+  <button onclick="stepFwd()">Step ▸</button>
+  <input type="range" id="slider" min="0" max="27" value="0" oninput="seekTo(+this.value)">
+  <div class="info">t = <span id="tLabel">0</span> / 27</div>
+</div>
+
+<div class="controls">
+  <span class="info">Speed:</span>
+  <button onclick="setSpeed(0.5)">0.5×</button>
+  <button id="sp1" onclick="setSpeed(1)">1×</button>
+  <button onclick="setSpeed(2)">2×</button>
+  <button class="active" onclick="setSpeed(4)">4×</button>
+</div>
+
+<div class="toggle-row">
+  <label><input type="checkbox" id="trailToggle" checked onchange="draw()"> Trails</label>
+  <label><input type="checkbox" id="goalToggle" checked onchange="draw()"> Goals</label>
+  <label><input type="checkbox" id="gridToggle" checked onchange="draw()"> Grid</label>
+  <label><input type="checkbox" id="interpToggle" checked> Interpolate</label>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Agent 0</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#eab308"></div>Agent 1</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div>Agent 2</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div>Agent 3</div>
+</div>
+
+<script>
+const DATA=[[[0.1293011,-0.0091257,0.0885477,-0.0782203],[0.1411656,-0.0203655,0.1534682,-0.1482194],[0.1577357,-0.0371157,0.1994335,-0.2050596],[0.1774505,-0.0582353,0.2288633,-0.2494643],[0.1988276,-0.0827378,0.2418546,-0.2836429],[0.2202788,-0.1098252,0.2365912,-0.3096345],[0.239522,-0.1388355,0.202425,-0.328688],[0.2533134,-0.1690509,0.1286454,-0.3392467],[0.2602929,-0.198738,0.052001,-0.3251614],[0.2622833,-0.2227615,0.0071737,-0.2378111],[0.261984,-0.2381119,-0.0085751,-0.1369348],[0.2606687,-0.2459154,-0.0176341,-0.0615898],[0.2590753,-0.2487584,-0.0177391,-0.0165893],[0.257825,-0.2490069,-0.0119709,0.0041535],[0.2573275,-0.248409,-0.0023059,0.007888],[0.2574176,-0.2478457,0.0026545,0.0054453],[0.2576482,-0.247512,0.0025174,0.0028382],[0.2576466,-0.2473159,-0.0012848,0.0018496],[0.2573275,-0.2471619,-0.0046768,0.0016414],[0.2568743,-0.2470296,-0.0052138,0.0013846],[0.2564887,-0.2469226,-0.0038213,0.0010908],[0.2562297,-0.2468332,-0.0024057,0.0009443],[0.2560709,-0.2467518,-0.0014454,0.0008854],[0.2559842,-0.2466774,-0.0007225,0.0007967],[0.2559536,-0.2466133,-0.0001474,0.0006702],[0.2559693,-0.2465614,0.0003341,0.0005297],[0.2560323,-0.246526,0.0008831,0.0003263],[0.2561469,-0.2465128,0.0014695,5.57e-05]],[[0.0635531,0.286904,0.0859041,0.0425445],[0.0753214,0.292215,0.1531868,0.0672457],[0.0922685,0.2989033,0.2058578,0.0778489],[0.113257,0.3057439,0.2468789,0.0750861],[0.1373861,0.3114661,0.2787118,0.0578277],[0.1639551,0.3148485,0.3034625,0.0274594],[0.1924281,0.3150477,0.322819,-0.01041],[0.2223939,0.3117323,0.3380195,-0.0500505],[0.2535372,0.3050091,0.3500463,-0.0870291],[0.2856117,0.2952348,0.3595511,-0.11939],[0.318427,0.2828813,0.3671471,-0.1461968],[0.3518317,0.2684574,0.3731711,-0.1673005],[0.3856946,0.2525556,0.3777951,-0.1813804],[0.4198708,0.2362789,0.3807056,-0.1805891],[0.4540721,0.2216712,0.3796695,-0.1531651],[0.4866425,0.2108378,0.3530053,-0.1039748],[0.5117655,0.2039649,0.242214,-0.0625619],[0.5272596,0.2001119,0.1371263,-0.0329354],[0.5350916,0.1983024,0.0619714,-0.0136909],[0.5380642,0.1976835,0.0185574,-0.0034691],[0.5386288,0.1975679,0.0001305,-0.0001923],[0.538401,0.1975315,-0.0038611,-0.0005103],[0.5381563,0.1974582,-0.002149,-0.0009662],[0.5381415,0.1974318,0.000829,4.29e-05],[0.5384218,0.1975178,0.0042562,0.0014119],[0.5390122,0.1976743,0.0077136,0.0019013],[0.5398339,0.1978644,0.0098365,0.0022185],[0.5407211,0.1981229,0.0098672,0.0031985]],[[-0.2711011,-0.1854371,-0.0674076,0.0469267],[-0.2799355,-0.1782318,-0.1135358,0.0966249],[-0.2918149,-0.1666869,-0.1412215,0.1441026],[-0.3054507,-0.1512609,-0.1566527,0.1850483],[-0.3200187,-0.132618,-0.1644738,0.2181913],[-0.3348419,-0.1113891,-0.1648179,0.2447188],[-0.349114,-0.0880629,-0.1554596,0.2664107],[-0.3616092,-0.0629743,-0.1305227,0.2849378],[-0.3709546,-0.0364053,-0.0904967,0.3003482],[-0.3761408,-0.0086598,-0.0411879,0.312251],[-0.3767552,0.0199567,0.010355,0.320817],[-0.3728178,0.0491965,0.0604453,0.3269203],[-0.364697,0.0788764,0.1051251,0.331206],[-0.3529168,0.108878,0.1437745,0.3344226],[-0.337997,0.1391423,0.1767759,0.3371941],[-0.3203775,0.1696509,0.2052691,0.3398807],[-0.3003849,0.2003793,0.2305757,0.3421985],[-0.2783434,0.2312149,0.2520716,0.3428278],[-0.2545525,0.261996,0.270479,0.3416039],[-0.2292001,0.2925851,0.2872996,0.339017],[-0.2023815,0.3228717,0.3033269,0.3352682],[-0.1741743,0.3527531,0.3184571,0.3303903],[-0.1446838,0.3821343,0.3322805,0.3244914],[-0.1140529,0.4109099,0.3443744,0.3173466],[-0.0824474,0.4389031,0.3545709,0.3078803],[-0.0500365,0.4657642,0.3628962,0.2937448],[-0.0169815,0.4907678,0.3694682,0.2698545],[0.0165556,0.5122939,0.3742178,0.223841]],[[-0.0972577,-0.4505428,-0.0858063,-0.0822528],[-0.1091666,-0.4616559,-0.1555787,-0.1440909],[-0.126445,-0.4773543,-0.2101838,-0.1895944],[-0.1478677,-0.4962263,-0.2519532,-0.2197367],[-0.1724262,-0.5166155,-0.2833305,-0.2299509],[-0.19932,-0.5364603,-0.306565,-0.215771],[-0.227926,-0.553667,-0.3234837,-0.178893],[-0.2577529,-0.5663584,-0.3353737,-0.1220773],[-0.2884178,-0.5732433,-0.3433939,-0.053711],[-0.3196816,-0.573923,-0.3493661,0.0155268],[-0.3513904,-0.5688794,-0.3537972,0.0762969],[-0.3833788,-0.5592571,-0.3562417,0.122223],[-0.4153104,-0.5468495,-0.3540721,0.1456819],[-0.4457021,-0.5345106,-0.3294925,0.1328083],[-0.4700767,-0.5248773,-0.241497,0.0941496],[-0.4859913,-0.518673,-0.1444956,0.0563295],[-0.4945905,-0.5153512,-0.0710704,0.0271984],[-0.4982667,-0.5140552,-0.0257359,0.0080002],[-0.4992463,-0.5139883,-0.0034579,-0.0028843],[-0.499037,-0.5145608,0.0052165,-0.0080996],[-0.49841,-0.5153897,0.0078413,-0.009765],[-0.4976847,-0.5162324,0.0081687,-0.0091612],[-0.4969943,-0.5169218,0.0074223,-0.0069091],[-0.4964173,-0.5173298,0.0059046,-0.003347],[-0.4960194,-0.5173697,0.0036806,0.0010082],[-0.4958315,-0.5170362,0.0012903,0.0050551],[-0.495825,-0.5164256,-0.0005371,0.0076487],[-0.4959253,-0.5157014,-0.0014024,0.0082454]]];
+
+const GOALS=[[0.25678,-0.24649],[0.53769,0.20014],[0.1452,0.54053],[-0.49516,-0.51273]];
+
+const COLORS = ['#3b82f6','#eab308','#22c55e','#ef4444'];
+const COLORS_DIM = ['rgba(59,130,246,0.25)','rgba(234,179,8,0.25)','rgba(34,197,94,0.25)','rgba(239,68,68,0.25)'];
+const COLORS_TRAIL = ['rgba(59,130,246,0.5)','rgba(234,179,8,0.5)','rgba(34,197,94,0.5)','rgba(239,68,68,0.5)'];
+
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+
+const WORLD_MIN = -1.0, WORLD_MAX = 1.0;
+const WORLD_SIZE = WORLD_MAX - WORLD_MIN;
+const PAD = 50;
+const DRAW_W = W - 2*PAD, DRAW_H = H - 2*PAD;
+const AGENT_R = 0.1;
+const VEL_SCALE = 0.8;
+const MAX_T = 27;
+
+let t = 0, playing = false, speed = 4, animT = 0, lastTime = 0;
+
+function w2px(wx, wy) {
+  const px = PAD + ((wx - WORLD_MIN) / WORLD_SIZE) * DRAW_W;
+  const py = PAD + ((WORLD_MAX - wy) / WORLD_SIZE) * DRAW_H;
+  return [px, py];
+}
+
+function worldToPx(dist) {
+  return (dist / WORLD_SIZE) * DRAW_W;
+}
+
+function lerp(a, b, f) { return a + (b - a) * f; }
+
+function getAgentState(agent, time) {
+  const idx = Math.floor(time);
+  const frac = time - idx;
+  if (idx >= DATA[agent].length - 1) return DATA[agent][DATA[agent].length - 1];
+  if (!document.getElementById('interpToggle').checked || frac === 0) return DATA[agent][idx];
+  const a = DATA[agent][idx], b = DATA[agent][idx + 1];
+  return [lerp(a[0],b[0],frac), lerp(a[1],b[1],frac), lerp(a[2],b[2],frac), lerp(a[3],b[3],frac)];
+}
+
+function drawGrid() {
+  if (!document.getElementById('gridToggle').checked) return;
+  ctx.strokeStyle = '#1a1c32';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([]);
+  for (let v = WORLD_MIN; v <= WORLD_MAX + 0.01; v += 0.5) {
+    const [x1,y1] = w2px(v, WORLD_MIN);
+    const [x2,y2] = w2px(v, WORLD_MAX);
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+    const [x3,y3] = w2px(WORLD_MIN, v);
+    const [x4,y4] = w2px(WORLD_MAX, v);
+    ctx.beginPath(); ctx.moveTo(x3,y3); ctx.lineTo(x4,y4); ctx.stroke();
+  }
+  ctx.strokeStyle = '#2a2d48';
+  ctx.lineWidth = 1.5;
+  const [ox1,oy1] = w2px(0, WORLD_MIN);
+  const [ox2,oy2] = w2px(0, WORLD_MAX);
+  ctx.beginPath(); ctx.moveTo(ox1,oy1); ctx.lineTo(ox2,oy2); ctx.stroke();
+  const [ax1,ay1] = w2px(WORLD_MIN, 0);
+  const [ax2,ay2] = w2px(WORLD_MAX, 0);
+  ctx.beginPath(); ctx.moveTo(ax1,ay1); ctx.lineTo(ax2,ay2); ctx.stroke();
+
+  ctx.fillStyle = '#4b5563';
+  ctx.font = '10px JetBrains Mono';
+  ctx.textAlign = 'center';
+  for (let v = WORLD_MIN; v <= WORLD_MAX + 0.01; v += 0.5) {
+    const [lx, ly] = w2px(v, WORLD_MIN);
+    ctx.fillText(v.toFixed(1), lx, ly + 14);
+    const [lx2, ly2] = w2px(WORLD_MIN, v);
+    ctx.textAlign = 'right';
+    ctx.fillText(v.toFixed(1), lx2 - 6, ly2 + 4);
+    ctx.textAlign = 'center';
+  }
+  ctx.fillStyle = '#6b7280';
+  ctx.font = '11px JetBrains Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText('2.0 × 2.0 environment  [−1.0, 1.0]', W/2, H - 6);
+  ctx.fillText('X', W/2, PAD + DRAW_H + 30);
+  ctx.save();
+  ctx.translate(12, PAD + DRAW_H/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillText('Y', 0, 0);
+  ctx.restore();
+}
+
+function drawTrails(upToTime) {
+  if (!document.getElementById('trailToggle').checked) return;
+  const maxT = Math.floor(upToTime);
+  for (let a = 0; a < 4; a++) {
+    ctx.strokeStyle = COLORS_TRAIL[a];
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    for (let i = 0; i <= maxT && i < DATA[a].length; i++) {
+      const [px, py] = w2px(DATA[a][i][0], DATA[a][i][1]);
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    if (upToTime > maxT && maxT < DATA[a].length - 1) {
+      const s = getAgentState(a, upToTime);
+      const [px, py] = w2px(s[0], s[1]);
+      ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+    const [sx, sy] = w2px(DATA[a][0][0], DATA[a][0][1]);
+    ctx.fillStyle = COLORS_DIM[a];
+    ctx.beginPath(); ctx.arc(sx, sy, 4, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#4b5563';
+    ctx.font = '9px JetBrains Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText('start', sx, sy - 8);
+  }
+}
+
+function drawGoals() {
+  if (!document.getElementById('goalToggle').checked) return;
+  for (let a = 0; a < 4; a++) {
+    const [gx, gy] = w2px(GOALS[a][0], GOALS[a][1]);
+    const r = 6;
+    ctx.strokeStyle = COLORS[a];
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(gx-r, gy-r); ctx.lineTo(gx+r, gy+r); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(gx+r, gy-r); ctx.lineTo(gx-r, gy+r); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#4b5563';
+    ctx.font = '9px JetBrains Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText('goal', gx, gy - 10);
+  }
+}
+
+function drawAgent(a, time) {
+  const state = getAgentState(a, time);
+  const [px, py, vx, vy] = state;
+  const [cx, cy] = w2px(px, py);
+  const r = worldToPx(AGENT_R);
+
+  ctx.shadowColor = COLORS[a];
+  ctx.shadowBlur = 8;
+  ctx.fillStyle = COLORS[a];
+  ctx.globalAlpha = 0.3;
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
+  ctx.globalAlpha = 1;
+  ctx.shadowBlur = 0;
+
+  ctx.strokeStyle = COLORS[a];
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.stroke();
+
+  ctx.fillStyle = COLORS[a];
+  ctx.beginPath(); ctx.arc(cx, cy, 2, 0, Math.PI*2); ctx.fill();
+
+  const vel = Math.sqrt(vx*vx + vy*vy);
+  if (vel > 0.001) {
+    const heading = Math.atan2(vy, vx);
+    const lineLen = worldToPx(vel * VEL_SCALE);
+    const ex = cx + Math.cos(heading) * lineLen;
+    const ey = cy - Math.sin(heading) * lineLen;
+
+    ctx.strokeStyle = COLORS[a];
+    ctx.lineWidth = 2;
+    ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(ex, ey); ctx.stroke();
+
+    const angle = Math.atan2(ey - cy, ex - cx);
+    const aLen = 5;
+    ctx.fillStyle = COLORS[a];
+    ctx.beginPath();
+    ctx.moveTo(ex, ey);
+    ctx.lineTo(ex - aLen*Math.cos(angle - 0.35), ey - aLen*Math.sin(angle - 0.35));
+    ctx.lineTo(ex - aLen*Math.cos(angle + 0.35), ey - aLen*Math.sin(angle + 0.35));
+    ctx.closePath(); ctx.fill();
+  }
+
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 11px JetBrains Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText(a, cx, cy + r + 14);
+
+  ctx.fillStyle = '#6b7280';
+  ctx.font = '9px JetBrains Mono';
+  ctx.fillText('v=' + vel.toFixed(3), cx, cy + r + 25);
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  drawGrid();
+  drawTrails(animT);
+  drawGoals();
+  for (let a = 0; a < 4; a++) drawAgent(a, animT);
+
+  ctx.fillStyle = 'rgba(10,11,20,0.8)';
+  ctx.fillRect(PAD, PAD, 100, 28);
+  ctx.fillStyle = '#c8c2b6';
+  ctx.font = '13px JetBrains Mono';
+  ctx.textAlign = 'left';
+  ctx.fillText('t = ' + Math.floor(animT), PAD + 8, PAD + 18);
+
+  document.getElementById('slider').value = Math.floor(animT);
+  document.getElementById('tLabel').textContent = Math.floor(animT);
+}
+
+function animate(now) {
+  if (!playing) return;
+  if (!lastTime) lastTime = now;
+  const dt = (now - lastTime) / 1000;
+  lastTime = now;
+  animT += dt * speed * 4;
+  if (animT >= MAX_T) { animT = MAX_T; playing = false; updatePlayBtn(); }
+  draw();
+  if (playing) requestAnimationFrame(animate);
+}
+
+function togglePlay() {
+  playing = !playing;
+  if (playing) {
+    if (animT >= MAX_T) animT = 0;
+    lastTime = 0;
+    requestAnimationFrame(animate);
+  }
+  updatePlayBtn();
+}
+
+function updatePlayBtn() {
+  document.getElementById('playBtn').textContent = playing ? '⏸ Pause' : '▶ Play';
+  document.getElementById('playBtn').classList.toggle('active', playing);
+}
+
+function seekTo(val) { animT = val; draw(); }
+function stepFwd() { animT = Math.min(MAX_T, Math.floor(animT) + 1); draw(); }
+function stepBack() { animT = Math.max(0, Math.floor(animT) - 1); draw(); }
+
+function setSpeed(s) {
+  speed = s;
+  document.querySelectorAll('.controls button').forEach(b => {
+    if (b.textContent.includes('×')) b.classList.remove('active');
+  });
+  event.target.classList.add('active');
+}
+
+draw();
+</script>
+</body>
+</html>
