@@ -75,7 +75,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 280px;
+      min-height: 500px;
     }
     .video-panel video {
       width: 100%;
@@ -94,7 +94,7 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      min-height: 280px;
+      min-height: 500px;
     }
     .video-placeholder span { font-size: 2rem; }
     .video-placeholder p { color: #aaa; font-size: 0.85rem; }
@@ -105,7 +105,7 @@
       border-radius: 10px;
       padding: 20px;
       overflow-y: auto;
-      max-height: 320px;
+      max-height: 500px;
     }
     .explanation-panel h3 {
       font-size: 0.9rem;
@@ -251,10 +251,10 @@
       <p>Thank you for participating in this study. You will watch short video clips of multi-agent scenarios and answer questions about them.</p>
       <p>The survey is divided into two parts:</p>
       <ul>
-        <li><strong>Objective Assessment</strong> — predict or assess agent behavior</li>
-        <li><strong>Subjective Assessment</strong> — compare two explanations (A vs B)</li>
+        <li>Objective Assessment — predict or assess agent behavior</li>
+        <li>Subjective Assessment — compare two explanations (A vs B)</li>
       </ul>
-      <p>Please watch each video carefully before answering. There are <strong>8 questions</strong> in total.</p>
+      <p>Please watch each video carefully before answering. There are 8 questions in total.</p>
       <button class="start-btn" onclick="goTo(1)">Start Survey →</button>
     </div>
   </div>
@@ -264,7 +264,7 @@
   ══════════════════════════════════════════ -->
   <div class="page" id="page-1">
     <div>
-      <div class="section-label">Demo Case Version B</div>
+      <div class="section-label">Demo Case</div>
       <div class="page-title">Familiarize yourself with the format</div>
     </div>
     <div class="content-row">
@@ -275,16 +275,16 @@
         <h3>Explanation</h3>
         <p>This is a demo case to help you understand the format of the survey. Watch the video on the left and read this explanation. In this scenario, multiple agents navigate toward their goals while interacting with each other. Pay attention to how agents influence each other's movement and decisions.</p>
         <br>
-        <p>In the following pages, you will be asked questions based on the video and explanation provided. Use the <strong>Next</strong> button to proceed and <strong>Back</strong> to revisit previous pages.</p>
+        <p>In the following pages, you will be asked questions based on the video and explanation provided. Use the Next button to proceed and Back to revisit previous pages.</p>
       </div>
     </div>
     <div class="question-box">
       <h3>Demo Question: Which agent reaches its goal first?</h3>
       <div class="choices" data-key="demo">
-        <button class="choice-btn" onclick="selectChoice(this, 'demo', 'Agent BLUE')">Agent BLUE</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'demo', 'Agent RED')">Agent RED</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'demo', 'Agent YELLOW')">Agent YELLOW</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'demo', 'Agent GREEN')">Agent GREEN</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'demo', 'BLUE')"><strong>BLUE</strong></button>
+        <button class="choice-btn" onclick="selectChoice(this, 'demo', 'RED')"><strong>RED</strong></button>
+        <button class="choice-btn" onclick="selectChoice(this, 'demo', 'YELLOW')"><strong>YELLOW</strong></button>
+        <button class="choice-btn" onclick="selectChoice(this, 'demo', 'GREEN')"><strong>GREEN</strong></button>
       </div>
     </div>
     <div class="nav-row">
@@ -295,34 +295,31 @@
 
   <!-- ══════════════════════════════════════════
        PAGE 2 — OBJECTIVE Q1 (video 13)
-       Agent BLUE's influence on agent RED
+       BLUE's influence on agent RED
   ══════════════════════════════════════════ -->
   <div class="page" id="page-2">
     <div>
       <div class="section-label">Objective Assessment — Question 1 of 4</div>
-      <div class="page-title">Agent BLUE's influence on Agent RED</div>
+      <div class="page-title"><strong>BLUE</strong>'s influence on <strong>RED</strong></div>
     </div>
     <div class="content-row">
       <div class="video-panel">
-        <video controls src="videos/13.mp4">
-          <div class="video-placeholder"><span>▶</span><p>Video 13</p><p>videos/13.mp4</p></div>
-        </video>
+        <iframe src="videos/case13.html" style="width:100%;height:100%;border:none;min-height:500px;"></iframe>
       </div>
       <div class="explanation-panel">
         <h3>Explanation</h3>
-        <p>In this scenario, Agent BLUE and Agent RED are navigating in a shared environment. Observe how Agent BLUE's movement and decisions affect the trajectory and behavior of Agent RED during the highlighted time step window.</p>
-        <br>
-        <p>Consider factors such as proximity, direction of movement, and whether Agent RED altered its path in response to Agent BLUE's actions.</p>
+        <p>During this window, <strong>RED</strong> is the agent still far from its goal (located in the lower-left around (−0.40, −0.44)). If you trace <strong>RED</strong>’s position, it starts around (0.24, −0.36) at timestep 40 and needs to head left. However, <strong>YELLOW</strong> is parked almost exactly on the direct path between <strong>RED</strong> and <strong>RED</strong>’s goal—<strong>YELLOW</strong> reached its own goal near (−0.10, −0.45) early in the episode and is sitting still. Through the team’s learned wireless communication (GNN messages), <strong>RED</strong> “knows” something is in the way even though it has no direct sensors. So instead of cutting straight across, <strong>RED</strong> swings wide to the south, dipping all the way down to y ≈ −0.77 by timestep 60—well below both <strong>YELLOW</strong> and the straight-line route.</p>
+        <p>Once <strong>RED</strong> has safely passed south of <strong>YELLOW</strong>, it curves back upward and to the left, converging on its goal from below by around timestep 70. This large arcing detour is the policy’s collision-avoidance behavior in action: <strong>RED</strong> trades a longer path for a safe margin around the stationary <strong>YELLOW</strong>, relying entirely on communicated information rather than any onboard proximity sensor.</p>
       </div>
     </div>
     <div class="question-box">
-      <h3>Based on the explanation, what is Agent BLUE's influence on Agent RED during the time step window?</h3>
+      <h3>Based on the explanation, what is <strong>BLUE</strong>'s influence on <strong>RED</strong> during the time step window?</h3>
       <div class="choices" data-key="q1">
-        <button class="choice-btn" onclick="selectChoice(this, 'q1', 'Strong positive influence')">Strong positive influence</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q1', 'Weak positive influence')">Weak positive influence</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q1', 'No influence')">No influence</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q1', 'Weak negative influence')">Weak negative influence</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q1', 'Strong negative influence')">Strong negative influence</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q1', '1')">1</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q1', '0.75')">0.75</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q1', '0.5')">0.5</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q1', '0.25')">0.25</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q1', '0.0')">0</button>
       </div>
     </div>
     <div class="nav-row">
@@ -333,28 +330,25 @@
 
   <!-- ══════════════════════════════════════════
        PAGE 3 — OBJECTIVE Q2 (video 96)
-       Predict Agent RED trajectory
+       Predict RED trajectory
   ══════════════════════════════════════════ -->
   <div class="page" id="page-3">
     <div>
       <div class="section-label">Objective Assessment — Question 2 of 4</div>
-      <div class="page-title">Predict Agent RED's Trajectory</div>
+      <div class="page-title">Predict <strong>RED</strong>'s Trajectory</div>
     </div>
     <div class="content-row">
       <div class="video-panel">
-        <video controls src="videos/96.mp4">
-          <div class="video-placeholder"><span>▶</span><p>Video 96</p><p>videos/96.mp4</p></div>
-        </video>
+        <iframe src="videos/case96.html" style="width:100%;height:100%;border:none;min-height:500px;"></iframe>
       </div>
       <div class="explanation-panel">
         <h3>Explanation</h3>
-        <p>Agent RED is navigating from its starting position toward its goal. Based on the current trajectory and surrounding agents, predict which path Agent RED will take to reach its goal.</p>
-        <br>
-        <p>Consider Agent RED's current heading, speed, and the positions of nearby agents when making your prediction.</p>
+        <p><strong>RED</strong> starts at the bottom-center of the field (around (-0.16, -0.59)) and needs to reach the upper-left area (around (-0.48, 0.44)). Rather than heading directly northwest, <strong>RED</strong> takes a wide clockwise arc: it first drives mostly northward through the center (timesteps 0–30), then veers northeast and climbs well above its goal—peaking around y ≈ 0.91 at roughly timestep 80—before sweeping left and slightly downward to settle on its goal by about timestep 110. After that, <strong>RED</strong> stays essentially parked at its goal for the rest of the episode.</p>
+        <p>The main agent <strong>RED</strong> appears to be coordinating with is <strong>GREEN</strong>. <strong>GREEN</strong>’s goal (upper-center, near (-0.09, 0.56)) sits right along <strong>RED</strong>’s would-be direct path, and <strong>GREEN</strong> is actively moving through that upper region during timesteps 0–35 before settling there. <strong>RED</strong>’s wide arc to the northeast keeps it safely east of and then above <strong>GREEN</strong>’s operating zone, only approaching its own goal from the north once <strong>GREEN</strong> is stationary. <strong>BLUE</strong> and <strong>YELLOW</strong> are less of a concern—<strong>BLUE</strong> reaches its lower-left goal quickly (by ~t=25), and <strong>YELLOW</strong> loops far to the west on its own long detour, staying well away from <strong>RED</strong> throughout.</p>
       </div>
     </div>
     <div class="question-box">
-      <h3>Predict Agent RED's trajectory from start to goal:</h3>
+      <h3>Predict <strong>RED</strong>'s trajectory from start to goal:</h3>
       <div class="choices" data-key="q2">
         <button class="choice-btn" onclick="selectChoice(this, 'q2', 'Path A – direct route')">Path A – direct route</button>
         <button class="choice-btn" onclick="selectChoice(this, 'q2', 'Path B – detour left')">Path B – detour left</button>
@@ -375,27 +369,24 @@
   <div class="page" id="page-4">
     <div>
       <div class="section-label">Objective Assessment — Question 3 of 4</div>
-      <div class="page-title">Will Agent YELLOW &amp; GREEN Yield?</div>
+      <div class="page-title">Will <strong>YELLOW</strong> &amp; <strong>GREEN</strong> Yield?</div>
     </div>
     <div class="content-row">
       <div class="video-panel">
-        <video controls src="videos/46.mp4">
-          <div class="video-placeholder"><span>▶</span><p>Video 46</p><p>videos/46.mp4</p></div>
-        </video>
+        <iframe src="videos/case46.html" style="width:100%;height:100%;border:none;min-height:500px;"></iframe>
       </div>
       <div class="explanation-panel">
         <h3>Explanation</h3>
-        <p>Agent YELLOW and Agent GREEN are on a collision course while each attempting to reach their respective goals. Based on their current trajectories and the explanation provided, assess whether they will yield to avoid a collision.</p>
-        <br>
-        <p>Yielding behavior involves one or both agents slowing down, stopping, or altering their path to allow the other to pass safely.</p>
+        <p>In the moments leading up to the near-collision (around timesteps 30–34), <strong>YELLOW</strong> is making only tiny steering corrections — its actions are nearly zero — which tells us it is overwhelmingly focused on its own goal-seeking and is not strongly reacting to <strong>GREEN</strong>’s approach. Meanwhile, <strong>BLUE</strong> and <strong>RED</strong> have both already settled at their goals and are essentially stationary, so any messages <strong>YELLOW</strong> receives from them carry no urgent avoidance information. <strong>YELLOW</strong> appears to be cruising toward its goal (upper-left region) largely on autopilot, with little evidence in its actions that it is attending to <strong>GREEN</strong> at all.</p>
+        <p><strong>GREEN</strong>, on the other hand, is executing large, sustained actions aimed squarely at its own goal (to the left and slightly below). Its steering adjustments in the moments before the encounter gradually reduce its leftward push, but this change is consistent with approaching its goal rather than dodging <strong>YELLOW</strong>. Like <strong>YELLOW</strong>, <strong>GREEN</strong> is receiving messages from <strong>BLUE</strong> and <strong>RED</strong> — both parked at their goals and providing no collision-warning signal — so the communication channel gives <strong>GREEN</strong> little reason to swerve. In short, both <strong>YELLOW</strong> and <strong>GREEN</strong> are primarily paying attention to their own goals, and the messages from the two idle teammates (<strong>BLUE</strong> and <strong>RED</strong>) offer no useful alert about the converging paths.</p>
       </div>
     </div>
     <div class="question-box">
-      <h3>Will Agent YELLOW &amp; GREEN yield to avoid collision and reach their goals?</h3>
+      <h3>Will <strong>YELLOW</strong> &amp; <strong>GREEN</strong> yield to avoid collision and reach their goals?</h3>
       <div class="choices" data-key="q3">
         <button class="choice-btn" onclick="selectChoice(this, 'q3', 'Both will yield')">Both will yield</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q3', 'Only YELLOW yields')">Only YELLOW yields</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q3', 'Only GREEN yields')">Only GREEN yields</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q3', 'Only YELLOW yields')">Only <strong>YELLOW</strong> yields</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q3', 'Only GREEN yields')">Only <strong>GREEN</strong> yields</button>
         <button class="choice-btn" onclick="selectChoice(this, 'q3', 'Neither will yield')">Neither will yield</button>
       </div>
     </div>
@@ -412,23 +403,20 @@
   <div class="page" id="page-5">
     <div>
       <div class="section-label">Objective Assessment — Question 4 of 4</div>
-      <div class="page-title">Will Agent GREEN Reach Its Destination in Time?</div>
+      <div class="page-title">Will <strong>GREEN</strong> Reach Its Destination in Time?</div>
     </div>
     <div class="content-row">
       <div class="video-panel">
-        <video controls src="videos/1.mp4">
-          <div class="video-placeholder"><span>▶</span><p>Video 1</p><p>videos/1.mp4</p></div>
-        </video>
+        <iframe src="videos/case1.html" style="width:100%;height:100%;border:none;min-height:500px;"></iframe>
       </div>
       <div class="explanation-panel">
         <h3>Explanation</h3>
-        <p>Agent GREEN is navigating toward its destination within a limited execution time window. Based on the current position, speed, and obstacles, assess whether Agent GREEN will successfully reach its destination before time runs out.</p>
-        <br>
-        <p>Take into account any delays caused by interactions with other agents or environmental constraints.</p>
+        <p><strong>GREEN</strong> starts the episode on the far left side of the environment and immediately begins accelerating strongly to the right, initially heading in the rough direction of its goal. However, instead of angling downward as it moves, <strong>GREEN</strong> drifts significantly upward. Through the first ~40 timesteps, <strong>GREEN</strong> builds up considerable speed and covers a lot of ground horizontally, but its vertical trajectory carries it well above where it needs to be. By around timestep 12–13, <strong>GREEN</strong> briefly passes near its goal’s x-coordinate but is far too high in y—and rather than correcting, it keeps going.</p>
+        <p>After overshooting, <strong>GREEN</strong>’s velocity begins to decay. From roughly timestep 50 onward, <strong>GREEN</strong>’s speed drops to near zero and it essentially stalls in place. The policy stops issuing meaningful corrective actions, and <strong>GREEN</strong> settles into a stationary hover in the upper-right area of the workspace. Meanwhile, <strong>BLUE</strong>, <strong>YELLOW</strong>, and <strong>RED</strong> all converge steadily onto their respective targets and come to rest with very small residual offsets. <strong>GREEN</strong>’s relative-distance-to-goal readings remain large and unchanging for the entire second half of the episode—something to keep in mind when judging whether it has finished its job.</p>
       </div>
     </div>
     <div class="question-box">
-      <h3>Will Agent GREEN reach its destination before the execution time runs out?</h3>
+      <h3>Will <strong>GREEN</strong> reach its destination before the execution time runs out?</h3>
       <div class="choices" data-key="q4">
         <button class="choice-btn" onclick="selectChoice(this, 'q4', 'Yes')">Yes</button>
         <button class="choice-btn" onclick="selectChoice(this, 'q4', 'No')">No</button>
@@ -457,11 +445,17 @@
       <div class="explanation-ab">
         <div class="explanation-panel">
           <h3>Explanation A</h3>
-          <p>Agent BLUE approached from the northwest corridor at t=5, causing Agent RED to recalculate its path. The influence score between BLUE and RED was 0.82 during steps 5–9, indicating a strong causal relationship. RED decelerated by 40% and deviated 15° from its original heading.</p>
-        </div>
+          <p><strong>**BLUE**</strong> starts lower-left, curves gently up then right to its upper-right goal. Early on it watches <strong>GREEN</strong> and <strong>RED</strong>; mid-episode it mostly tracks <strong>RED</strong> (already stationary); near the end it shifts attention to <strong>YELLOW</strong> and <strong>GREEN</strong> as it finishes its rightward curve—likely adjusting to <strong>YELLOW</strong> passing nearby.</p>
+          <p><strong>**YELLOW**</strong> starts at the left and sweeps in a wide arc—up then curving down-right toward its lower-right goal. From roughly t≈25–45 it strongly watches <strong>GREEN</strong>, when both agents are in close proximity. This drives <strong>YELLOW</strong>'s arc around <strong>GREEN</strong>. Later it shifts attention to <strong>BLUE</strong> and <strong>RED</strong> while descending toward its goal.</p>
+          <p><strong>**GREEN**</strong> starts lower-right but needs the upper-left, taking a big clockwise detour—right first, then arcing up and left. It watches <strong>RED</strong> early on (<strong>RED</strong> sits between <strong>GREEN</strong> and its goal), then strongly watches <strong>YELLOW</strong> around t≈30–45 as their paths nearly intersect, shaping <strong>GREEN</strong>'s wide avoidance arc.</p>
+          <p><strong>**RED**</strong> goes nearly straight to its nearby goal, arriving by roughly t≈20. It briefly watches <strong>YELLOW</strong> and <strong>BLUE</strong> during its short transit, then parks. After arriving, its attention matters little since it stops moving.</p>
+          </div>
         <div class="explanation-panel b">
           <h3>Explanation B</h3>
-          <p>Agent BLUE moved toward Agent RED, and RED responded by slowing down and changing direction slightly. This shows that BLUE had a notable effect on RED's behavior during this part of the simulation.</p>
+          <p><strong>**BLUE**</strong> Starts at the lower-left and needs to reach the center-right. Instead of cutting diagonally, it takes a gently curved path—climbing mostly upward first, then sweeping rightward in the second half. Early on, <strong>BLUE</strong> appears to pay attention to <strong>RED</strong>, who sits right in the center of its natural straight-line path, steering upward to go around. Once past <strong>RED</strong>’s area, it focuses on closing the gap to its goal.</p>
+          <p><strong>**YELLOW**</strong> Starts on the left and heads to the center-right-below. It takes a noticeable bow-shaped detour, arcing upward before descending to its goal. This arc likely comes from watching <strong>GREEN</strong>, whose path sweeps through the middle going the opposite direction—by looping high, <strong>YELLOW</strong> avoids a head-on crossing.</p>
+          <p><strong>**GREEN**</strong> Starts bottom-right, goal upper-left. Surprisingly, it first drifts rightward (away from its goal), then curves left and up. This detour appears to be a coordinated give-way—likely responding to <strong>BLUE</strong> moving through the center—letting <strong>BLUE</strong> pass before sweeping across.</p>
+          <p><strong>**RED**</strong> Starts near the center with a very short trip. It reaches its goal by roughly timestep 10 and parks. It briefly watches <strong>BLUE</strong> (the closest agent) to slip past cleanly, then holds still.</p>
         </div>
       </div>
     </div>
@@ -492,13 +486,19 @@
         <iframe src="videos/case74.html" style="width:100%;height:100%;min-height:320px;border:none;"></iframe>
       </div>
       <div class="explanation-ab">
-        <div class="explanation-panel">
+                <div class="explanation-panel">
           <h3>Explanation A</h3>
-          <p>At timestep 12, Agent YELLOW detected Agent GREEN within a 2-unit radius. YELLOW's avoidance protocol activated, reducing speed by 30% and steering right by 20°. GREEN simultaneously adjusted leftward, resulting in a coordinated pass with 0.5-unit clearance.</p>
+          <p><strong>**BLUE**</strong> Starts at the lower-left and needs to reach the center-right. Instead of cutting diagonally, it takes a gently curved path—climbing mostly upward first, then sweeping rightward in the second half. Early on, <strong>BLUE</strong> appears to pay attention to <strong>RED</strong>, who sits right in the center of its natural straight-line path, steering upward to go around. Once past <strong>RED</strong>’s area, it focuses on closing the gap to its goal.</p>
+          <p><strong>**YELLOW**</strong> Starts on the left and heads to the center-right-below. It takes a noticeable bow-shaped detour, arcing upward before descending to its goal. This arc likely comes from watching <strong>GREEN</strong>, whose path sweeps through the middle going the opposite direction—by looping high, <strong>YELLOW</strong> avoids a head-on crossing.</p>
+          <p><strong>**GREEN**</strong> Starts bottom-right, goal upper-left. Surprisingly, it first drifts rightward (away from its goal), then curves left and up. This detour appears to be a coordinated give-way—likely responding to <strong>BLUE</strong> moving through the center—letting <strong>BLUE</strong> pass before sweeping across.</p>
+          <p><strong>**RED**</strong> Starts near the center with a very short trip. It reaches its goal by roughly timestep 10 and parks. It briefly watches <strong>BLUE</strong> (the closest agent) to slip past cleanly, then holds still.</p>
         </div>
         <div class="explanation-panel b">
           <h3>Explanation B</h3>
-          <p>Agent YELLOW and Agent GREEN were heading toward each other. YELLOW moved to the right and GREEN moved to the left, so they managed to pass each other without colliding and continued toward their goals.</p>
+          <p><strong>**BLUE**</strong> starts at the bottom-center and needs to reach a goal in the middle of the field. It initially zooms right, overshooting its goal significantly, then curves back left to settle on target around mid-episode. Early on, <strong>BLUE</strong> strongly watches <strong>GREEN</strong>, likely because they start nearby and move in similar directions. As <strong>BLUE</strong> overshoots and corrects, attention shifts heavily to <strong>YELLOW</strong> (peaking ~0.84 around timestep 24), suggesting it's steering around <strong>YELLOW</strong>'s path.</p>
+          <p><strong>**YELLOW**</strong> starts upper-left and travels mostly straight rightward to its center-right goal. It primarily watches <strong>RED</strong> and moderately tracks <strong>GREEN</strong>, adjusting as those agents cross nearby space.</p>
+          <p><strong>**GREEN**</strong> starts center-left and moves diagonally down-right to its lower-right goal in a fairly direct path. It heavily watches <strong>BLUE</strong> early on—sensible since they start close together—then gradually shifts attention toward <strong>RED</strong> later.</p>
+          <p><strong>**RED**</strong> starts far-left and takes a dramatic wide clockwise loop, overshooting far right and high before curving back toward its center-right goal. It consistently watches <strong>YELLOW</strong> most, with <strong>GREEN</strong> attention rising in later timesteps as <strong>RED</strong> sweeps back through crowded space.</p>
         </div>
       </div>
     </div>
@@ -529,14 +529,20 @@
         <iframe src="videos/case90.html" style="width:100%;height:100%;min-height:320px;border:none;"></iframe>
       </div>
       <div class="explanation-ab">
-        <div class="explanation-panel">
+                <div class="explanation-panel">
           <h3>Explanation A</h3>
-          <p>Agent GREEN's remaining path length was 8.3 units at t=20, with an average speed of 0.6 units/step and 15 steps remaining — insufficient to cover the distance. Obstacles at t=22 caused a further 2-step delay, making goal completion statistically unlikely (p=0.12).</p>
+          <p><strong>**BLUE**</strong> starts at the right-center and heads toward a goal at the upper-left. It follows a smooth, gently curving arc — sweeping left and upward — then slows to a stop right on target. Its path bends slightly, suggesting it’s aware of <strong>YELLOW</strong> (which is crossing below), giving it space early on. Overall a clean, nearly straight run.</p>
+          <p><strong>**YELLOW**</strong> starts below-center and moves left and upward to a goal near the middle of the map. Its path is mostly straight. Mid-episode (around steps 10–16) it overlaps the area <strong>RED</strong> is crossing through, and it appears to briefly adjust speed to let <strong>RED</strong> pass, then resumes a direct line to its goal.</p>
+          <p><strong>**GREEN**</strong> starts at the far lower-left and heads almost straight up to a goal just slightly right. It takes the most direct, nearly vertical path of all agents, with minimal lateral wandering. It’s well-separated from the others and shows little need for avoidance.</p>
+          <p><strong>**RED**</strong> starts at the lower-left and travels the longest distance, heading far to the right. Mid-episode it curves noticeably upward then back down — likely reacting to <strong>YELLOW</strong>’s nearby position — before straightening out and coasting to its goal on the right side.</p>
         </div>
         <div class="explanation-panel b">
           <h3>Explanation B</h3>
-          <p>Agent GREEN still had a long way to go near the end of the simulation. It was moving slowly and encountered some obstacles, which made it hard for it to reach the destination before time ran out.</p>
-        </div>
+          <p><strong>**BLUE**</strong> starts at the right (0.34, 0.10) and heads diagonally left-and-up to its goal (−0.08, 0.31), following a fairly straight path. Early on it pays heavy attention to <strong>YELLOW</strong> (nearest agent, similar heading), then mid-episode shifts focus to <strong>RED</strong>—whose arcing path passes through the area—likely adjusting speed to avoid overlap. Attention returns to <strong>YELLOW</strong> near the end as they converge.</p>
+          <p><strong>**YELLOW**</strong> starts center-bottom (0.13, −0.27) and moves left-and-up to (−0.13, 0.05) on a smooth path. It initially watches <strong>BLUE</strong> very closely, then increasingly monitors <strong>RED</strong> and <strong>GREEN</strong> through mid-episode as those paths could cross nearby. Later attention rises broadly across all neighbors.</p>
+          <p><strong>**GREEN**</strong> starts lower-left (−0.57, −0.44) and moves almost straight up to its goal (−0.52, −0.05), arriving around timestep 20 and stopping. Early on it strongly attends to <strong>RED</strong> (who starts right next to it heading the opposite way), then relaxes once they separate, maintaining moderate watch on <strong>YELLOW</strong> afterward.</p>
+          <p><strong>**RED**</strong> starts at (−0.36, −0.26) and must reach the far-right goal (0.40, −0.38). It takes a large upward arc before curving back down—a clear detour. Initially it heavily watches <strong>GREEN</strong> (very close, conflicting path), then mid-episode monitors <strong>BLUE</strong> and <strong>YELLOW</strong> as it crosses through the middle. Attention fades as it pulls away from everyone.</p>
+          </div>
       </div>
     </div>
     <div class="question-box">

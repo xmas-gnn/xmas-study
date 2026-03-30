@@ -9,7 +9,12 @@
       "Bash(head -5 grep -n \"video controls\\\\|35.mp4\" /home/uchiwuwu/xmas-study/survey-c.html)",
       "Bash(grep -l \"speed = 1,\" /home/uchiwuwu/xmas-study/videos/case*.html)",
       "Bash(grep -n \"speed = \" /home/uchiwuwu/xmas-study/videos/case*.html)",
-      "Bash(grep -n 'class=\"\"\"\"active\"\"\"\"' /home/uchiwuwu/xmas-study/videos/case*.html)"
+      "Bash(grep -n 'class=\"\"\"\"active\"\"\"\"' /home/uchiwuwu/xmas-study/videos/case*.html)",
+      "Bash(sed -n '306,310p' /home/uchiwuwu/xmas-study/survey-b.html)",
+      "Bash(sed -n '343,347p' /home/uchiwuwu/xmas-study/survey-b.html)",
+      "Bash(sed -n '379,383p' /home/uchiwuwu/xmas-study/survey-b.html)",
+      "Bash(sed -n '415,419p' /home/uchiwuwu/xmas-study/survey-b.html)",
+      "Bash(python3:*)"
     ],
     "additionalDirectories": [
       "/home/uchiwuwu/xmas-study",
