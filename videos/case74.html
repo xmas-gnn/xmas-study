@@ -108,9 +108,9 @@
 <div class="controls">
   <span class="info">Speed:</span>
   <button onclick="setSpeed(0.5)">0.5×</button>
-  <button id="sp1" onclick="setSpeed(1)">1×</button>
+  <button id="sp1" class="active" onclick="setSpeed(1)">1×</button>
   <button onclick="setSpeed(2)">2×</button>
-  <button class="active" onclick="setSpeed(4)">4×</button>
+  <button onclick="setSpeed(4)">4×</button>
 </div>
 
 <div class="toggle-row">
@@ -159,7 +159,7 @@ const ARROW_MAX = 0.30;  // world-unit length of the fastest arrow
 const ARROW_EPS = 0.15;  // minimum fraction shown even when nearly stopped
 const MAX_T = 88;
 
-let t = 0, playing = false, speed = 4, animT = 0, lastTime = 0;
+let t = 0, playing = false, speed = 1, animT = 0, lastTime = 0;
 
 function w2px(wx, wy) {
   const px = PAD + ((wx - WORLD_MIN) / WORLD_SIZE) * DRAW_W;
@@ -351,7 +351,7 @@ function animate(now) {
   if (!lastTime) lastTime = now;
   const dt = (now - lastTime) / 1000;
   lastTime = now;
-  animT += dt * speed * 4;
+  animT += dt * speed * 10;
   if (animT >= MAX_T) { animT = MAX_T; playing = false; updatePlayBtn(); }
   draw();
   if (playing) requestAnimationFrame(animate);

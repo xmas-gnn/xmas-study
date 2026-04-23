@@ -145,7 +145,7 @@ const velMax = (() => {
 const ARROW_MAX = 0.30;  // world-unit length of the fastest arrow
 const ARROW_EPS = 0.15;  // minimum fraction shown even when nearly stopped
 
-let t = 0, playing = false, speed = 4, animT = 0, lastTime = 0;
+let t = 0, playing = false, speed = 1, animT = 0, lastTime = 0;
 
 function w2px(wx, wy) {
   const px = PAD + ((wx - WORLD_MIN) / WORLD_SIZE) * DRAW_W;
@@ -333,7 +333,7 @@ function animate(now) {
   if (!lastTime) lastTime = now;
   const dt = (now - lastTime) / 1000;
   lastTime = now;
-  animT += dt * speed * 4;
+  animT += dt * speed * 10;
   if (animT >= MAX_T) { animT = MAX_T; playing = false; updatePlayBtn(); }
   draw();
   if (playing) requestAnimationFrame(animate);
