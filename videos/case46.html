@@ -134,7 +134,7 @@ const DRAW_W = W - 2*PAD, DRAW_H = H - 2*PAD;
 const AGENT_R = 0.1;
 const VEL_SCALE = 0.8;
 
-let t = 0, playing = false, speed = 4, animT = 0, lastTime = 0;
+let t = 0, playing = false, speed = 1, animT = 0, lastTime = 0;
 
 function w2px(wx, wy) {
   const px = PAD + ((wx - WORLD_MIN) / WORLD_SIZE) * DRAW_W;
@@ -322,7 +322,7 @@ function animate(now) {
   if (!lastTime) lastTime = now;
   const dt = (now - lastTime) / 1000;
   lastTime = now;
-  animT += dt * speed * 4;
+  animT += dt * speed * 10;
   if (animT >= MAX_T) { animT = MAX_T; playing = false; updatePlayBtn(); }
   draw();
   if (playing) requestAnimationFrame(animate);
