@@ -36,9 +36,10 @@ agent 0: BLUE
 agent 1: YELLOW
 agent 2: GREEN
 agent 3: RED
-In this case, the user needs to predict agent RED's entire trajectory. 
-Your job is to explain who agent red is paying attention to and any information that you think would aid the user's prediction. 
-Concise explanation. 2 paragraphs at most"""
+In this case, the user needs to predict agent RED's entire trajectory.
+Your job is to explain who RED is paying attention to and how that attention shifts over time.
+Do NOT describe RED's movement path, trajectory shape, or direction of travel — that is the answer the user must predict.
+Concise explanation. 2 paragraphs at most."""
 
 message = client.messages.create(
     model="claude-opus-4-6",

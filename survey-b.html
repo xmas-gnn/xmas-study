@@ -246,16 +246,31 @@
        PAGE 0 — INTRO
   ══════════════════════════════════════════ -->
   <div class="page active" id="page-0">
-    <div class="intro-card">
-      <h2>Agent Behavior Survey</h2>
-      <p>Thank you for participating in this study. You will watch short video clips of multi-agent scenarios and answer questions about them.</p>
-      <p>The survey is divided into two parts:</p>
-      <ul>
-        <li>Objective Assessment — predict or assess agent behavior</li>
-        <li>Subjective Assessment — compare two explanations (A vs B)</li>
+    <div class="intro-card" style="max-width:760px; text-align:left;">
+      <h2 style="text-align:center;">Agent Behavior Survey</h2>
+      <p style="text-align:center; color:#777; margin-bottom:28px;">Estimated time: 10–15 minutes &nbsp;·&nbsp; No technical background required</p>
+
+      <h4 style="color:#1e3a5f; margin-bottom:8px;">The Scenario</h4>
+      <p>You will watch short video clips of <strong>four robots</strong> — called <strong style="color:#4a90e2;">BLUE</strong>, <strong style="color:#e25c4a;">RED</strong>, <strong style="color:#e2b94a;">YELLOW</strong>, and <strong style="color:#4aae6e;">GREEN</strong> — navigating a shared 2D space. Each robot starts at a random position and must reach its own target location, shown as a matching-color marker on screen.</p>
+      <br>
+      <p>The robots have <strong>no cameras or proximity sensors</strong> — they cannot directly see or detect each other. Instead, they have learned to exchange short wireless signals with their teammates. Using these signals, each robot decides at every moment how to move: go straight toward its goal, curve around a teammate, or slow down to avoid a collision.</p>
+
+      <br>
+      <h4 style="color:#1e3a5f; margin-bottom:8px;">What "Influence" Means</h4>
+      <p>Because the robots are blind to each other, each robot must decide <em>whose signal to rely on most</em> at any given moment. We call this <strong>influence</strong>: how much one robot's wireless signal shapes another robot's movement decision right now. A robot that is directly in another's path tends to have high influence on it; a robot that is far away or already parked tends to have little. Influence changes over time as the robots move.</p>
+
+      <br>
+      <h4 style="color:#1e3a5f; margin-bottom:8px;">What You Will Do</h4>
+      <ul style="line-height: 2.1; padding-left: 20px; color: #444;">
+        <li><strong>One demo question</strong> — familiarize yourself with the video player; you must answer correctly to proceed</li>
+        <li><strong>Four prediction questions</strong> — watch a video clip and answer a question about what the robots do or will do next</li>
+        <li><strong>Three comparison questions</strong> — read two short written explanations of the same video and judge which you find more helpful</li>
       </ul>
-      <p>Please watch each video carefully before answering. There are 8 questions in total.</p>
-      <button class="start-btn" onclick="goTo(1)">Start Survey →</button>
+
+      <p style="margin-top:24px; color:#888; font-size:0.85rem; text-align:center;">8 questions total &nbsp;·&nbsp; You may not go back once you submit</p>
+      <div style="text-align:center;">
+        <button class="start-btn" onclick="startSurvey()">Start Survey →</button>
+      </div>
     </div>
   </div>
 
@@ -272,10 +287,29 @@
         <iframe src="videos/case15.html" style="width:100%;height:100%;min-height:320px;border:none;"></iframe>
       </div>
       <div class="explanation-panel">
-        <h3>Explanation</h3>
-        <p>This is a demo case to help you understand the format of the survey. Watch the video on the left and read this explanation. In this scenario, multiple agents navigate toward their goals while interacting with each other. Pay attention to how agents influence each other's movement and decisions.</p>
+        <h3>How to Use the Video Player</h3>
+        <p><strong>Playback controls</strong></p>
+        <ul style="padding-left:16px; line-height:2; color:#444; font-size:0.9rem; margin-bottom:10px;">
+          <li><strong>▶ Play / ⏸ Pause</strong> — start or pause the animation</li>
+          <li><strong>◂ Step / Step ▸</strong> — jump backward or forward exactly one timestep; useful for examining a specific moment closely</li>
+          <li><strong>Slider bar</strong> — drag to jump to any point in the episode instantly</li>
+          <li><strong>Speed buttons (0.5× 1× 2× 4×)</strong> — control how fast the animation plays; the default is 4×; use 0.5× or 1× to slow down and catch fine details</li>
+        </ul>
+        <p><strong>Display options</strong></p>
+        <ul style="padding-left:16px; line-height:2; color:#444; font-size:0.9rem; margin-bottom:10px;">
+          <li><strong>Trails</strong> — shows the path each robot has traveled so far as a faded colored line</li>
+          <li><strong>Goals</strong> — shows each robot's target location as a small × marker in its color</li>
+          <li><strong>Grid</strong> — shows a coordinate grid in the background</li>
+          <li><strong>Interpolate</strong> — smooths movement between timesteps for a more fluid animation</li>
+        </ul>
+        <p><strong>What you see on screen</strong></p>
+        <ul style="padding-left:16px; line-height:2; color:#444; font-size:0.9rem;">
+          <li>Each <strong>colored circle</strong> is one robot (BLUE, YELLOW, GREEN, RED)</li>
+          <li>The <strong>arrow</strong> on a circle shows its current direction and speed — a longer arrow means faster movement</li>
+          <li>The <strong>× marker</strong> in each color is that robot's destination</li>
+        </ul>
         <br>
-        <p>In the following pages, you will be asked questions based on the video and explanation provided. Use the Next button to proceed and Back to revisit previous pages.</p>
+        <p style="color:#888; font-size:0.85rem;">Try the controls now using the demo video on the left, then answer the question below before proceeding.</p>
       </div>
     </div>
     <div class="question-box">
@@ -287,9 +321,12 @@
         <button class="choice-btn" onclick="selectChoice(this, 'demo', 'GREEN')"><strong>GREEN</strong></button>
       </div>
     </div>
+    <div id="demo-error" style="display:none; background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; padding:10px 16px; color:#b91c1c; font-size:0.9rem;">
+      That's not quite right — watch the video again and look at which robot reaches its target (×) first, then select your answer.
+    </div>
     <div class="nav-row">
       <button class="nav-btn back" onclick="goTo(0)">← Back</button>
-      <button class="nav-btn next" onclick="goTo(2)">Next →</button>
+      <button class="nav-btn next" onclick="checkDemo()">Next →</button>
     </div>
   </div>
 
@@ -315,11 +352,11 @@
     <div class="question-box">
       <h3>Based on the explanation, what is <strong>BLUE</strong>'s influence on <strong>RED</strong> during the time step window?</h3>
       <div class="choices" data-key="q1">
-        <button class="choice-btn" onclick="selectChoice(this, 'q1', '1')">1</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q1', '0.75')">0.75</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q1', '0.5')">0.5</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q1', '0.25')">0.25</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q1', '0.0')">0</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q1', '0')">No influence</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q1', '0.25')">Slight influence</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q1', '0.5')">Moderate influence</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q1', '0.75')">Strong influence</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q1', '1')">Full influence</button>
       </div>
     </div>
     <div class="nav-row">
@@ -350,11 +387,32 @@
     <div class="question-box">
       <h3>Predict <strong>RED</strong>'s trajectory from start to goal:</h3>
       <div class="choices" data-key="q2">
-        <button class="choice-btn" onclick="selectChoice(this, 'q2', 'Path A – direct route')">Path A – direct route</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q2', 'Path B – detour left')">Path B – detour left</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q2', 'Path C – detour right')">Path C – detour right</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q2', 'Path D – stops short of goal')">Path D – stops short of goal</button>
+        <!-- Path A -->
+        <button class="choice-btn" onclick="selectChoice(this,'q2','Path A – direct route')" style="padding:8px 8px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <svg width="150" height="150" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg"><rect width="150" height="150" fill="#0d0e1a" rx="4"/><line x1="43.5" y1="12" x2="43.5" y2="138" stroke="#1e2036" stroke-width="0.7"/><line x1="12" y1="106.5" x2="138" y2="106.5" stroke="#1e2036" stroke-width="0.7"/><line x1="106.5" y1="12" x2="106.5" y2="138" stroke="#1e2036" stroke-width="0.7"/><line x1="12" y1="43.5" x2="138" y2="43.5" stroke="#1e2036" stroke-width="0.7"/><line x1="75.0" y1="12" x2="75.0" y2="138" stroke="#2a2d4a" stroke-width="0.9"/><line x1="12" y1="75.0" x2="138" y2="75.0" stroke="#2a2d4a" stroke-width="0.9"/><rect x="12" y="12" width="126" height="126" fill="none" stroke="#2a2d4a" stroke-width="0.8"/><line x1="35.9" y1="89.7" x2="44.9" y2="98.7" stroke="#4a90e2" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="44.9" y1="89.7" x2="35.9" y2="98.7" stroke="#4a90e2" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="59.7" y1="97.4" x2="68.7" y2="106.4" stroke="#e2b94a" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="68.7" y1="97.4" x2="59.7" y2="106.4" stroke="#e2b94a" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="65.0" y1="35.2" x2="74.0" y2="44.2" stroke="#4aae6e" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="74.0" y1="35.2" x2="65.0" y2="44.2" stroke="#4aae6e" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="40.2" y1="43.1" x2="49.2" y2="52.1" stroke="#ef4444" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="49.2" y1="43.1" x2="40.2" y2="52.1" stroke="#ef4444" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><polyline points="65.2,72.1 61.8,74.7 56.5,78.6 50.4,83.4 44.1,89.0 40.0,93.4 39.8,94.3 40.3,94.2 40.6,94.2 40.6,94.1 40.7,94.0 40.6,94.0 40.7,94.1 40.7,94.2 40.8,94.4 40.8,94.4 40.8,94.4 40.7,94.4 40.7,94.3 40.7,94.3 40.7,94.3 40.7,94.3 40.7,94.2 40.8,94.2 40.7,94.3 40.7,94.3 40.7,94.3 40.7,94.3 40.7,94.2 40.7,94.2 40.8,94.2 40.7,94.1 40.7,94.1 40.7,94.1 40.7,94.0 40.7,94.1 40.7,94.1 40.7,94.1 40.7,94.1 40.7,94.1 40.7,94.2 40.7,94.2 40.7,94.2 40.7,94.2 40.7,94.2 40.7,94.2 40.7,94.3 40.6,94.4 40.6,94.4 40.7,94.4 40.8,94.3 41.0,94.2 41.0,94.1 40.7,93.8 40.4,93.5 40.0,93.2 39.3,93.3 39.0,93.7 39.3,94.0 39.7,94.1 40.1,94.1 40.3,94.1 40.4,94.2" stroke="#4a90e2" stroke-width="1.5" fill="none" opacity="0.85"/><polyline points="86.9,60.7 85.0,59.3 81.7,56.9 78.4,54.7 74.4,53.7 70.1,53.2 66.2,53.1 62.3,53.3 58.0,54.4 53.3,56.8 48.5,60.6 43.6,65.1 39.2,69.6 35.3,73.5 32.0,76.9 28.8,80.0 26.0,82.3 23.8,83.7 22.3,84.3 21.2,84.6 20.6,84.4 20.4,83.9 20.5,82.9 21.1,81.4 22.2,79.6 23.5,78.0 24.8,76.8 25.9,75.9 26.8,75.1 27.5,74.4 27.8,73.7 27.5,73.4 26.3,73.6 24.4,74.8 22.0,77.0 20.1,79.3 19.1,80.9 18.4,82.0 18.1,82.7 17.8,83.3 17.7,83.8 17.6,84.3 17.5,84.8 17.4,85.6 17.3,86.6 17.2,88.0 17.2,90.0 17.3,92.4 17.7,94.9 18.4,97.6 19.5,100.8 21.3,104.7 23.7,109.3 26.8,113.9 30.5,118.2 34.9,122.1 39.6,124.0 44.7,123.4 50.1,121.1 55.7,117.1 60.3,111.9 63.1,106.0 64.2,101.9" stroke="#e2b94a" stroke-width="1.5" fill="none" opacity="0.85"/><polyline points="110.4,62.2 110.6,59.5 110.3,55.2 108.8,50.5 106.1,45.6 102.2,41.0 97.3,37.3 91.8,35.1 85.8,34.6 79.5,36.4 73.2,39.1 69.7,39.7 69.3,39.4 69.4,39.3 69.3,39.2 69.2,39.2 69.0,39.2 69.0,39.2 69.0,39.2 69.0,39.2 69.0,39.2 68.9,39.3 68.8,39.3 68.8,39.4 69.0,39.7 69.2,40.0 69.2,40.0 69.4,39.7 69.5,39.6 69.4,39.6 69.3,39.5 69.2,39.4 69.3,39.4 69.3,39.5 69.3,39.6 69.4,39.6 69.5,39.6 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7" stroke="#4aae6e" stroke-width="1.5" fill="none" opacity="0.85"/><polyline points="65.1,111.9 56.9,86.1 50.8,66.8 44.7,47.6" stroke="#ef4444" stroke-width="1.8" fill="none" opacity="0.9"/><circle cx="44.7" cy="47.6" r="7" fill="#ef4444" opacity="0.18"/><circle cx="44.7" cy="47.6" r="5.5" fill="#ef4444" opacity="0.55"/><circle cx="44.7" cy="47.6" r="3.8" fill="#ef4444"/><circle cx="44.7" cy="47.6" r="1.5" fill="white"/><circle cx="40.4" cy="94.2" r="7" fill="#4a90e2" opacity="0.18"/><circle cx="40.4" cy="94.2" r="5.5" fill="#4a90e2" opacity="0.55"/><circle cx="40.4" cy="94.2" r="3.8" fill="#4a90e2"/><circle cx="40.4" cy="94.2" r="1.5" fill="white"/><circle cx="64.2" cy="101.9" r="7" fill="#e2b94a" opacity="0.18"/><circle cx="64.2" cy="101.9" r="5.5" fill="#e2b94a" opacity="0.55"/><circle cx="64.2" cy="101.9" r="3.8" fill="#e2b94a"/><circle cx="64.2" cy="101.9" r="1.5" fill="white"/><circle cx="69.5" cy="39.7" r="7" fill="#4aae6e" opacity="0.18"/><circle cx="69.5" cy="39.7" r="5.5" fill="#4aae6e" opacity="0.55"/><circle cx="69.5" cy="39.7" r="3.8" fill="#4aae6e"/><circle cx="69.5" cy="39.7" r="1.5" fill="white"/></svg>
+          <span style="font-size:0.82rem;font-weight:600;color:#1e3a5f;">Path A</span>
+          <span style="font-size:0.72rem;color:#666;margin-top:-3px;">Direct route</span>
+        </button>
+        <!-- Path B -->
+        <button class="choice-btn" onclick="selectChoice(this,'q2','Path B – detour left')" style="padding:8px 8px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <svg width="150" height="150" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg"><rect width="150" height="150" fill="#0d0e1a" rx="4"/><line x1="43.5" y1="12" x2="43.5" y2="138" stroke="#1e2036" stroke-width="0.7"/><line x1="12" y1="106.5" x2="138" y2="106.5" stroke="#1e2036" stroke-width="0.7"/><line x1="106.5" y1="12" x2="106.5" y2="138" stroke="#1e2036" stroke-width="0.7"/><line x1="12" y1="43.5" x2="138" y2="43.5" stroke="#1e2036" stroke-width="0.7"/><line x1="75.0" y1="12" x2="75.0" y2="138" stroke="#2a2d4a" stroke-width="0.9"/><line x1="12" y1="75.0" x2="138" y2="75.0" stroke="#2a2d4a" stroke-width="0.9"/><rect x="12" y="12" width="126" height="126" fill="none" stroke="#2a2d4a" stroke-width="0.8"/><line x1="35.9" y1="89.7" x2="44.9" y2="98.7" stroke="#4a90e2" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="44.9" y1="89.7" x2="35.9" y2="98.7" stroke="#4a90e2" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="59.7" y1="97.4" x2="68.7" y2="106.4" stroke="#e2b94a" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="68.7" y1="97.4" x2="59.7" y2="106.4" stroke="#e2b94a" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="65.0" y1="35.2" x2="74.0" y2="44.2" stroke="#4aae6e" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="74.0" y1="35.2" x2="65.0" y2="44.2" stroke="#4aae6e" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="40.2" y1="43.1" x2="49.2" y2="52.1" stroke="#ef4444" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="49.2" y1="43.1" x2="40.2" y2="52.1" stroke="#ef4444" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><polyline points="65.2,72.1 61.8,74.7 56.5,78.6 50.4,83.4 44.1,89.0 40.0,93.4 39.8,94.3 40.3,94.2 40.6,94.2 40.6,94.1 40.7,94.0 40.6,94.0 40.7,94.1 40.7,94.2 40.8,94.4 40.8,94.4 40.8,94.4 40.7,94.4 40.7,94.3 40.7,94.3 40.7,94.3 40.7,94.3 40.7,94.2 40.8,94.2 40.7,94.3 40.7,94.3 40.7,94.3 40.7,94.3 40.7,94.2 40.7,94.2 40.8,94.2 40.7,94.1 40.7,94.1 40.7,94.1 40.7,94.0 40.7,94.1 40.7,94.1 40.7,94.1 40.7,94.1 40.7,94.1 40.7,94.2 40.7,94.2 40.7,94.2 40.7,94.2 40.7,94.2 40.7,94.2 40.7,94.3 40.6,94.4 40.6,94.4 40.7,94.4 40.8,94.3 41.0,94.2 41.0,94.1 40.7,93.8 40.4,93.5 40.0,93.2 39.3,93.3 39.0,93.7 39.3,94.0 39.7,94.1 40.1,94.1 40.3,94.1 40.4,94.2" stroke="#4a90e2" stroke-width="1.5" fill="none" opacity="0.85"/><polyline points="86.9,60.7 85.0,59.3 81.7,56.9 78.4,54.7 74.4,53.7 70.1,53.2 66.2,53.1 62.3,53.3 58.0,54.4 53.3,56.8 48.5,60.6 43.6,65.1 39.2,69.6 35.3,73.5 32.0,76.9 28.8,80.0 26.0,82.3 23.8,83.7 22.3,84.3 21.2,84.6 20.6,84.4 20.4,83.9 20.5,82.9 21.1,81.4 22.2,79.6 23.5,78.0 24.8,76.8 25.9,75.9 26.8,75.1 27.5,74.4 27.8,73.7 27.5,73.4 26.3,73.6 24.4,74.8 22.0,77.0 20.1,79.3 19.1,80.9 18.4,82.0 18.1,82.7 17.8,83.3 17.7,83.8 17.6,84.3 17.5,84.8 17.4,85.6 17.3,86.6 17.2,88.0 17.2,90.0 17.3,92.4 17.7,94.9 18.4,97.6 19.5,100.8 21.3,104.7 23.7,109.3 26.8,113.9 30.5,118.2 34.9,122.1 39.6,124.0 44.7,123.4 50.1,121.1 55.7,117.1 60.3,111.9 63.1,106.0 64.2,101.9" stroke="#e2b94a" stroke-width="1.5" fill="none" opacity="0.85"/><polyline points="110.4,62.2 110.6,59.5 110.3,55.2 108.8,50.5 106.1,45.6 102.2,41.0 97.3,37.3 91.8,35.1 85.8,34.6 79.5,36.4 73.2,39.1 69.7,39.7 69.3,39.4 69.4,39.3 69.3,39.2 69.2,39.2 69.0,39.2 69.0,39.2 69.0,39.2 69.0,39.2 69.0,39.2 68.9,39.3 68.8,39.3 68.8,39.4 69.0,39.7 69.2,40.0 69.2,40.0 69.4,39.7 69.5,39.6 69.4,39.6 69.3,39.5 69.2,39.4 69.3,39.4 69.3,39.5 69.3,39.6 69.4,39.6 69.5,39.6 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7" stroke="#4aae6e" stroke-width="1.5" fill="none" opacity="0.85"/><polyline points="65.1,111.9 56.1,106.5 37.2,93.9 21.5,75.0 24.6,52.9 44.7,47.6" stroke="#ef4444" stroke-width="1.8" fill="none" opacity="0.9"/><circle cx="44.7" cy="47.6" r="7" fill="#ef4444" opacity="0.18"/><circle cx="44.7" cy="47.6" r="5.5" fill="#ef4444" opacity="0.55"/><circle cx="44.7" cy="47.6" r="3.8" fill="#ef4444"/><circle cx="44.7" cy="47.6" r="1.5" fill="white"/><circle cx="40.4" cy="94.2" r="7" fill="#4a90e2" opacity="0.18"/><circle cx="40.4" cy="94.2" r="5.5" fill="#4a90e2" opacity="0.55"/><circle cx="40.4" cy="94.2" r="3.8" fill="#4a90e2"/><circle cx="40.4" cy="94.2" r="1.5" fill="white"/><circle cx="64.2" cy="101.9" r="7" fill="#e2b94a" opacity="0.18"/><circle cx="64.2" cy="101.9" r="5.5" fill="#e2b94a" opacity="0.55"/><circle cx="64.2" cy="101.9" r="3.8" fill="#e2b94a"/><circle cx="64.2" cy="101.9" r="1.5" fill="white"/><circle cx="69.5" cy="39.7" r="7" fill="#4aae6e" opacity="0.18"/><circle cx="69.5" cy="39.7" r="5.5" fill="#4aae6e" opacity="0.55"/><circle cx="69.5" cy="39.7" r="3.8" fill="#4aae6e"/><circle cx="69.5" cy="39.7" r="1.5" fill="white"/></svg>
+          <span style="font-size:0.82rem;font-weight:600;color:#1e3a5f;">Path B</span>
+          <span style="font-size:0.72rem;color:#666;margin-top:-3px;">Detour left</span>
+        </button>
+        <!-- Path C: real RED trajectory from case96 -->
+        <button class="choice-btn" onclick="selectChoice(this,'q2','Path C – detour right')" style="padding:8px 8px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <svg width="150" height="150" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg"><rect width="150" height="150" fill="#0d0e1a" rx="4"/><line x1="43.5" y1="12" x2="43.5" y2="138" stroke="#1e2036" stroke-width="0.7"/><line x1="12" y1="106.5" x2="138" y2="106.5" stroke="#1e2036" stroke-width="0.7"/><line x1="106.5" y1="12" x2="106.5" y2="138" stroke="#1e2036" stroke-width="0.7"/><line x1="12" y1="43.5" x2="138" y2="43.5" stroke="#1e2036" stroke-width="0.7"/><line x1="75.0" y1="12" x2="75.0" y2="138" stroke="#2a2d4a" stroke-width="0.9"/><line x1="12" y1="75.0" x2="138" y2="75.0" stroke="#2a2d4a" stroke-width="0.9"/><rect x="12" y="12" width="126" height="126" fill="none" stroke="#2a2d4a" stroke-width="0.8"/><line x1="35.9" y1="89.7" x2="44.9" y2="98.7" stroke="#4a90e2" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="44.9" y1="89.7" x2="35.9" y2="98.7" stroke="#4a90e2" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="59.7" y1="97.4" x2="68.7" y2="106.4" stroke="#e2b94a" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="68.7" y1="97.4" x2="59.7" y2="106.4" stroke="#e2b94a" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="65.0" y1="35.2" x2="74.0" y2="44.2" stroke="#4aae6e" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="74.0" y1="35.2" x2="65.0" y2="44.2" stroke="#4aae6e" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="40.2" y1="43.1" x2="49.2" y2="52.1" stroke="#ef4444" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="49.2" y1="43.1" x2="40.2" y2="52.1" stroke="#ef4444" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><polyline points="65.2,72.1 61.8,74.7 56.5,78.6 50.4,83.4 44.1,89.0 40.0,93.4 39.8,94.3 40.3,94.2 40.6,94.2 40.6,94.1 40.7,94.0 40.6,94.0 40.7,94.1 40.7,94.2 40.8,94.4 40.8,94.4 40.8,94.4 40.7,94.4 40.7,94.3 40.7,94.3 40.7,94.3 40.7,94.3 40.7,94.2 40.8,94.2 40.7,94.3 40.7,94.3 40.7,94.3 40.7,94.3 40.7,94.2 40.7,94.2 40.8,94.2 40.7,94.1 40.7,94.1 40.7,94.1 40.7,94.0 40.7,94.1 40.7,94.1 40.7,94.1 40.7,94.1 40.7,94.1 40.7,94.2 40.7,94.2 40.7,94.2 40.7,94.2 40.7,94.2 40.7,94.2 40.7,94.3 40.6,94.4 40.6,94.4 40.7,94.4 40.8,94.3 41.0,94.2 41.0,94.1 40.7,93.8 40.4,93.5 40.0,93.2 39.3,93.3 39.0,93.7 39.3,94.0 39.7,94.1 40.1,94.1 40.3,94.1 40.4,94.2" stroke="#4a90e2" stroke-width="1.5" fill="none" opacity="0.85"/><polyline points="86.9,60.7 85.0,59.3 81.7,56.9 78.4,54.7 74.4,53.7 70.1,53.2 66.2,53.1 62.3,53.3 58.0,54.4 53.3,56.8 48.5,60.6 43.6,65.1 39.2,69.6 35.3,73.5 32.0,76.9 28.8,80.0 26.0,82.3 23.8,83.7 22.3,84.3 21.2,84.6 20.6,84.4 20.4,83.9 20.5,82.9 21.1,81.4 22.2,79.6 23.5,78.0 24.8,76.8 25.9,75.9 26.8,75.1 27.5,74.4 27.8,73.7 27.5,73.4 26.3,73.6 24.4,74.8 22.0,77.0 20.1,79.3 19.1,80.9 18.4,82.0 18.1,82.7 17.8,83.3 17.7,83.8 17.6,84.3 17.5,84.8 17.4,85.6 17.3,86.6 17.2,88.0 17.2,90.0 17.3,92.4 17.7,94.9 18.4,97.6 19.5,100.8 21.3,104.7 23.7,109.3 26.8,113.9 30.5,118.2 34.9,122.1 39.6,124.0 44.7,123.4 50.1,121.1 55.7,117.1 60.3,111.9 63.1,106.0 64.2,101.9" stroke="#e2b94a" stroke-width="1.5" fill="none" opacity="0.85"/><polyline points="110.4,62.2 110.6,59.5 110.3,55.2 108.8,50.5 106.1,45.6 102.2,41.0 97.3,37.3 91.8,35.1 85.8,34.6 79.5,36.4 73.2,39.1 69.7,39.7 69.3,39.4 69.4,39.3 69.3,39.2 69.2,39.2 69.0,39.2 69.0,39.2 69.0,39.2 69.0,39.2 69.0,39.2 68.9,39.3 68.8,39.3 68.8,39.4 69.0,39.7 69.2,40.0 69.2,40.0 69.4,39.7 69.5,39.6 69.4,39.6 69.3,39.5 69.2,39.4 69.3,39.4 69.3,39.5 69.3,39.6 69.4,39.6 69.5,39.6 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7" stroke="#4aae6e" stroke-width="1.5" fill="none" opacity="0.85"/><polyline points="65.1,111.9 61.4,110.9 57.3,109.8 56.4,108.4 60.0,103.4 64.4,96.9 69.0,89.9 73.6,82.4 77.4,74.5 79.3,66.7 80.0,60.0 80.5,55.2 81.3,51.5 82.7,48.8 84.4,46.8 86.2,44.6 87.7,41.1 88.1,36.2 86.1,30.1 81.3,23.3 75.0,17.6 68.1,15.0 60.3,16.3 52.6,20.8 45.3,27.2 40.3,34.6 41.4,42.3 44.2,47.0 44.3,47.1 44.3,47.1 44.3,47.1 44.3,47.1 44.3,47.2 44.3,47.2 44.3,47.2 44.3,47.3 44.3,47.3 44.3,47.4 44.3,47.5 44.3,47.5 44.3,47.5 44.3,47.5 44.3,47.5 44.3,47.6 44.3,47.6 44.3,47.6 44.4,47.6 44.4,47.6" stroke="#ef4444" stroke-width="1.8" fill="none" opacity="0.9"/><circle cx="44.4" cy="47.6" r="7" fill="#ef4444" opacity="0.18"/><circle cx="44.4" cy="47.6" r="5.5" fill="#ef4444" opacity="0.55"/><circle cx="44.4" cy="47.6" r="3.8" fill="#ef4444"/><circle cx="44.4" cy="47.6" r="1.5" fill="white"/><circle cx="40.4" cy="94.2" r="7" fill="#4a90e2" opacity="0.18"/><circle cx="40.4" cy="94.2" r="5.5" fill="#4a90e2" opacity="0.55"/><circle cx="40.4" cy="94.2" r="3.8" fill="#4a90e2"/><circle cx="40.4" cy="94.2" r="1.5" fill="white"/><circle cx="64.2" cy="101.9" r="7" fill="#e2b94a" opacity="0.18"/><circle cx="64.2" cy="101.9" r="5.5" fill="#e2b94a" opacity="0.55"/><circle cx="64.2" cy="101.9" r="3.8" fill="#e2b94a"/><circle cx="64.2" cy="101.9" r="1.5" fill="white"/><circle cx="69.5" cy="39.7" r="7" fill="#4aae6e" opacity="0.18"/><circle cx="69.5" cy="39.7" r="5.5" fill="#4aae6e" opacity="0.55"/><circle cx="69.5" cy="39.7" r="3.8" fill="#4aae6e"/><circle cx="69.5" cy="39.7" r="1.5" fill="white"/></svg>
+          <span style="font-size:0.82rem;font-weight:600;color:#1e3a5f;">Path C</span>
+          <span style="font-size:0.72rem;color:#666;margin-top:-3px;">Detour right</span>
+        </button>
+        <!-- Path D: stops near GREEN's position, blocked -->
+        <button class="choice-btn" onclick="selectChoice(this,'q2','Path D – stops short of goal')" style="padding:8px 8px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <svg width="150" height="150" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg"><rect width="150" height="150" fill="#0d0e1a" rx="4"/><line x1="43.5" y1="12" x2="43.5" y2="138" stroke="#1e2036" stroke-width="0.7"/><line x1="12" y1="106.5" x2="138" y2="106.5" stroke="#1e2036" stroke-width="0.7"/><line x1="106.5" y1="12" x2="106.5" y2="138" stroke="#1e2036" stroke-width="0.7"/><line x1="12" y1="43.5" x2="138" y2="43.5" stroke="#1e2036" stroke-width="0.7"/><line x1="75.0" y1="12" x2="75.0" y2="138" stroke="#2a2d4a" stroke-width="0.9"/><line x1="12" y1="75.0" x2="138" y2="75.0" stroke="#2a2d4a" stroke-width="0.9"/><rect x="12" y="12" width="126" height="126" fill="none" stroke="#2a2d4a" stroke-width="0.8"/><line x1="35.9" y1="89.7" x2="44.9" y2="98.7" stroke="#4a90e2" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="44.9" y1="89.7" x2="35.9" y2="98.7" stroke="#4a90e2" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="59.7" y1="97.4" x2="68.7" y2="106.4" stroke="#e2b94a" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="68.7" y1="97.4" x2="59.7" y2="106.4" stroke="#e2b94a" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="65.0" y1="35.2" x2="74.0" y2="44.2" stroke="#4aae6e" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="74.0" y1="35.2" x2="65.0" y2="44.2" stroke="#4aae6e" stroke-width="1.8" stroke-dasharray="2.5,1.5"/><line x1="40.2" y1="43.1" x2="49.2" y2="52.1" stroke="#ef4444" stroke-width="1.8" stroke-dasharray="2.5,1.5" opacity="0.3"/><line x1="49.2" y1="43.1" x2="40.2" y2="52.1" stroke="#ef4444" stroke-width="1.8" stroke-dasharray="2.5,1.5" opacity="0.3"/><polyline points="65.2,72.1 61.8,74.7 56.5,78.6 50.4,83.4 44.1,89.0 40.0,93.4 39.8,94.3 40.3,94.2 40.6,94.2 40.6,94.1 40.7,94.0 40.6,94.0 40.7,94.1 40.7,94.2 40.8,94.4 40.8,94.4 40.8,94.4 40.7,94.4 40.7,94.3 40.7,94.3 40.7,94.3 40.7,94.3 40.7,94.2 40.8,94.2 40.7,94.3 40.7,94.3 40.7,94.3 40.7,94.3 40.7,94.2 40.7,94.2 40.8,94.2 40.7,94.1 40.7,94.1 40.7,94.1 40.7,94.0 40.7,94.1 40.7,94.1 40.7,94.1 40.7,94.1 40.7,94.1 40.7,94.2 40.7,94.2 40.7,94.2 40.7,94.2 40.7,94.2 40.7,94.2 40.7,94.3 40.6,94.4 40.6,94.4 40.7,94.4 40.8,94.3 41.0,94.2 41.0,94.1 40.7,93.8 40.4,93.5 40.0,93.2 39.3,93.3 39.0,93.7 39.3,94.0 39.7,94.1 40.1,94.1 40.3,94.1 40.4,94.2" stroke="#4a90e2" stroke-width="1.5" fill="none" opacity="0.85"/><polyline points="86.9,60.7 85.0,59.3 81.7,56.9 78.4,54.7 74.4,53.7 70.1,53.2 66.2,53.1 62.3,53.3 58.0,54.4 53.3,56.8 48.5,60.6 43.6,65.1 39.2,69.6 35.3,73.5 32.0,76.9 28.8,80.0 26.0,82.3 23.8,83.7 22.3,84.3 21.2,84.6 20.6,84.4 20.4,83.9 20.5,82.9 21.1,81.4 22.2,79.6 23.5,78.0 24.8,76.8 25.9,75.9 26.8,75.1 27.5,74.4 27.8,73.7 27.5,73.4 26.3,73.6 24.4,74.8 22.0,77.0 20.1,79.3 19.1,80.9 18.4,82.0 18.1,82.7 17.8,83.3 17.7,83.8 17.6,84.3 17.5,84.8 17.4,85.6 17.3,86.6 17.2,88.0 17.2,90.0 17.3,92.4 17.7,94.9 18.4,97.6 19.5,100.8 21.3,104.7 23.7,109.3 26.8,113.9 30.5,118.2 34.9,122.1 39.6,124.0 44.7,123.4 50.1,121.1 55.7,117.1 60.3,111.9 63.1,106.0 64.2,101.9" stroke="#e2b94a" stroke-width="1.5" fill="none" opacity="0.85"/><polyline points="110.4,62.2 110.6,59.5 110.3,55.2 108.8,50.5 106.1,45.6 102.2,41.0 97.3,37.3 91.8,35.1 85.8,34.6 79.5,36.4 73.2,39.1 69.7,39.7 69.3,39.4 69.4,39.3 69.3,39.2 69.2,39.2 69.0,39.2 69.0,39.2 69.0,39.2 69.0,39.2 69.0,39.2 68.9,39.3 68.8,39.3 68.8,39.4 69.0,39.7 69.2,40.0 69.2,40.0 69.4,39.7 69.5,39.6 69.4,39.6 69.3,39.5 69.2,39.4 69.3,39.4 69.3,39.5 69.3,39.6 69.4,39.6 69.5,39.6 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7 69.5,39.7" stroke="#4aae6e" stroke-width="1.5" fill="none" opacity="0.85"/><polyline points="65.1,111.9 61.4,110.9 57.3,109.8 56.4,108.4 60.0,103.4 64.4,96.9 69.0,89.9 73.6,82.4 77.4,74.5 79.3,66.7 80.0,60.0 80.5,55.2 81.3,51.5 81.3,47.9 78.2,42.2 76.9,41.0" stroke="#ef4444" stroke-width="1.8" fill="none" opacity="0.9"/><line x1="76.9" y1="41.0" x2="44.7" y2="47.6" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.3"/><circle cx="76.9" cy="41.0" r="7" fill="#ef4444" opacity="0.18"/><circle cx="76.9" cy="41.0" r="5.5" fill="#ef4444" opacity="0.55"/><circle cx="76.9" cy="41.0" r="3.8" fill="#ef4444"/><circle cx="76.9" cy="41.0" r="1.5" fill="white"/><circle cx="40.4" cy="94.2" r="7" fill="#4a90e2" opacity="0.18"/><circle cx="40.4" cy="94.2" r="5.5" fill="#4a90e2" opacity="0.55"/><circle cx="40.4" cy="94.2" r="3.8" fill="#4a90e2"/><circle cx="40.4" cy="94.2" r="1.5" fill="white"/><circle cx="64.2" cy="101.9" r="7" fill="#e2b94a" opacity="0.18"/><circle cx="64.2" cy="101.9" r="5.5" fill="#e2b94a" opacity="0.55"/><circle cx="64.2" cy="101.9" r="3.8" fill="#e2b94a"/><circle cx="64.2" cy="101.9" r="1.5" fill="white"/><circle cx="69.5" cy="39.7" r="7" fill="#4aae6e" opacity="0.18"/><circle cx="69.5" cy="39.7" r="5.5" fill="#4aae6e" opacity="0.55"/><circle cx="69.5" cy="39.7" r="3.8" fill="#4aae6e"/><circle cx="69.5" cy="39.7" r="1.5" fill="white"/></svg>
+          <span style="font-size:0.82rem;font-weight:600;color:#1e3a5f;">Path D</span>
+          <span style="font-size:0.72rem;color:#666;margin-top:-3px;">Stops short of goal</span>
+        </button>
       </div>
+      <p style="font-size:0.78rem;color:#999;margin-top:6px;">● filled circle = start position &nbsp;·&nbsp; × = goal position</p>
     </div>
     <div class="nav-row">
       <button class="nav-btn back" onclick="goTo(2)">← Back</button>
@@ -364,12 +422,12 @@
 
   <!-- ══════════════════════════════════════════
        PAGE 4 — OBJECTIVE Q3 (video 46)
-       Will YELLOW & GREEN yield?
+       How do YELLOW & GREEN navigate past each other?
   ══════════════════════════════════════════ -->
   <div class="page" id="page-4">
     <div>
       <div class="section-label">Objective Assessment — Question 3 of 4</div>
-      <div class="page-title">Will <strong>YELLOW</strong> &amp; <strong>GREEN</strong> Yield?</div>
+      <div class="page-title">How Do <strong>YELLOW</strong> &amp; <strong>GREEN</strong> Reach Their Goals?</div>
     </div>
     <div class="content-row">
       <div class="video-panel">
@@ -382,12 +440,12 @@
       </div>
     </div>
     <div class="question-box">
-      <h3>Will <strong>YELLOW</strong> &amp; <strong>GREEN</strong> yield to avoid collision and reach their goals?</h3>
+      <h3>Given the first half of the episode, how do you predict <strong>YELLOW</strong> and <strong>GREEN</strong> will navigate past each other on the way to their goals?</h3>
       <div class="choices" data-key="q3">
-        <button class="choice-btn" onclick="selectChoice(this, 'q3', 'Both will yield')">Both will yield</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q3', 'Only YELLOW yields')">Only <strong>YELLOW</strong> yields</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q3', 'Only GREEN yields')">Only <strong>GREEN</strong> yields</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q3', 'Neither will yield')">Neither will yield</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q3', 'Both curve — YELLOW arcs up-left, GREEN arcs down-left')">Both curve to avoid each other — <strong>YELLOW</strong> arcs upward-left, <strong>GREEN</strong> arcs downward-left</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q3', 'YELLOW slows and waits; GREEN crosses first')"><strong>YELLOW</strong> slows and waits while <strong>GREEN</strong> crosses first, then continues to its goal</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q3', 'GREEN slows and waits; YELLOW crosses first')"><strong>GREEN</strong> slows and waits while <strong>YELLOW</strong> crosses first, then continues to its goal</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q3', 'Both travel straight without adjusting')">Both travel in straight lines without adjusting for each other</button>
       </div>
     </div>
     <div class="nav-row">
@@ -418,9 +476,9 @@
     <div class="question-box">
       <h3>Will <strong>GREEN</strong> reach its destination before the execution time runs out?</h3>
       <div class="choices" data-key="q4">
-        <button class="choice-btn" onclick="selectChoice(this, 'q4', 'Yes')">Yes</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q4', 'No')">No</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q4', 'Uncertain')">Uncertain</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q4', 'Yes')">Yes, it reaches the goal in time</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q4', 'No')">No, it is heading the wrong way</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q4', 'Uncertain')">Uncertain, it has stalled partway and may or may not resume</button>
       </div>
     </div>
     <div class="nav-row">
@@ -554,14 +612,33 @@
     </div>
     <div class="nav-row">
       <button class="nav-btn back" onclick="goTo(7)">← Back</button>
+      <button class="nav-btn next" onclick="goTo(9)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PAGE 9 — INACCURACY REPORT
+  ══════════════════════════════════════════ -->
+  <div class="page" id="page-9">
+    <div>
+      <div class="section-label">Optional Feedback</div>
+      <div class="page-title">Report Explanation Inaccuracies</div>
+    </div>
+    <div class="question-box" style="max-width:700px;margin:0 auto;">
+      <h3>Did you notice anything factually incorrect in the explanations shown throughout this survey?</h3>
+      <p style="color:#aaa;font-size:0.9rem;margin-bottom:12px;">This is optional. If any explanation described robot behavior that did not match what you saw in the video, please describe it here. You can leave this blank.</p>
+      <textarea id="inaccuracy-text" rows="6" style="width:100%;background:#1e1e2e;color:#e0e0f0;border:1px solid #555;border-radius:8px;padding:12px;font-size:0.95rem;resize:vertical;"></textarea>
+    </div>
+    <div class="nav-row">
+      <button class="nav-btn back" onclick="goTo(8)">← Back</button>
       <button class="nav-btn next submit" onclick="submitSurvey()">Submit Survey ✓</button>
     </div>
   </div>
 
   <!-- ══════════════════════════════════════════
-       PAGE 9 — THANK YOU
+       PAGE 10 — THANK YOU
   ══════════════════════════════════════════ -->
-  <div class="page" id="page-9">
+  <div class="page" id="page-10">
     <div class="thanks-card">
       <div class="icon">✅</div>
       <h2>Thank you!</h2>
@@ -578,19 +655,43 @@
   <input type="hidden" name="demo"   id="f-demo">
   <input type="hidden" name="q1_blue_influence"  id="f-q1">
   <input type="hidden" name="q2_red_trajectory"  id="f-q2">
-  <input type="hidden" name="q3_yield"           id="f-q3">
+  <input type="hidden" name="q3_navigation"       id="f-q3">
   <input type="hidden" name="q4_green_time"      id="f-q4">
   <input type="hidden" name="q5_useful"          id="f-q5">
   <input type="hidden" name="q6_satisfying"      id="f-q6">
   <input type="hidden" name="q7_helpful"         id="f-q7">
+  <input type="hidden" name="inaccuracy_report"  id="f-inaccuracy">
+  <input type="hidden" name="total_time_seconds" id="f-total-time">
+  <input type="hidden" name="page_durations_json" id="f-page-durations">
 </form>
 
 <script>
-  const TOTAL_PAGES = 9; // 0 = intro, 9 = thanks
+  const TOTAL_PAGES = 10; // 0 = intro, 10 = thanks
   let currentPage = 0;
   const answers = {};
 
+  let startTime = null;          // ms timestamp when user enters page 1
+  const pageEnterTimes = {};     // page number → ms since startTime
+
+  function startSurvey() {
+    startTime = Date.now();
+    goTo(1);
+  }
+
+  function checkDemo() {
+    const errorBox = document.getElementById('demo-error');
+    if (answers['demo'] !== 'BLUE') {
+      errorBox.style.display = 'block';
+      return;
+    }
+    errorBox.style.display = 'none';
+    goTo(2);
+  }
+
   function goTo(n) {
+    if (startTime !== null) {
+      pageEnterTimes[n] = Date.now();
+    }
     document.getElementById('page-' + currentPage).classList.remove('active');
     currentPage = n;
     document.getElementById('page-' + n).classList.add('active');
@@ -624,6 +725,18 @@
   }
 
   function submitSurvey() {
+    // Compute timing
+    const submitTime = Date.now();
+    const totalSeconds = startTime ? Math.round((submitTime - startTime) / 1000) : null;
+
+    // Page durations: time spent on each question page (1–9), in seconds
+    const pageDurations = {};
+    for (let p = 1; p <= 9; p++) {
+      const enter = pageEnterTimes[p];
+      const leave = pageEnterTimes[p + 1] || submitTime;
+      if (enter) pageDurations['p' + p] = Math.round((leave - enter) / 1000);
+    }
+
     // Copy answers into hidden form
     document.getElementById('f-demo').value = answers['demo'] || '';
     document.getElementById('f-q1').value   = answers['q1']   || '';
@@ -633,6 +746,9 @@
     document.getElementById('f-q5').value   = answers['q5']   || '';
     document.getElementById('f-q6').value   = answers['q6']   || '';
     document.getElementById('f-q7').value   = answers['q7']   || '';
+    document.getElementById('f-inaccuracy').value = (document.getElementById('inaccuracy-text').value || '').trim();
+    document.getElementById('f-total-time').value   = totalSeconds !== null ? totalSeconds : '';
+    document.getElementById('f-page-durations').value = JSON.stringify(pageDurations);
 
     const form = document.getElementById('formspree-form');
     const data = new FormData(form);
@@ -642,9 +758,9 @@
       body: data,
       headers: { 'Accept': 'application/json' }
     }).then(res => {
-      goTo(9);
+      goTo(10);
     }).catch(() => {
-      goTo(9); // still show thanks even if network fails
+      goTo(10); // still show thanks even if network fails
     });
   }
 
