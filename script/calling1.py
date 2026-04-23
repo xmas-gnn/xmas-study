@@ -36,10 +36,10 @@ agent 0: BLUE
 agent 1: YELLOW
 agent 2: GREEN
 agent 3: RED
-The user needs to predict where agent green will reach its goal locaiton. 
-Your job is to explain what agent green is thinking without spilling the answer to the user. 
-The user need to figure it out from you explanation.
-Concise explanation. 2 paragraphs at most"""
+The user needs to predict whether GREEN will reach its goal before execution time runs out.
+Your job is to explain who GREEN is paying attention to and how that attention shifts over time.
+Do NOT describe GREEN's movement path, whether it is heading toward or away from its goal, or whether its distance to the goal is increasing or decreasing — that is the answer the user must predict.
+Concise explanation. 2 paragraphs at most."""
 
 message = client.messages.create(
     model="claude-opus-4-6",
