@@ -142,7 +142,18 @@ const WORLD_SIZE = WORLD_MAX - WORLD_MIN;
 const PAD = 50; // pixel padding for axis labels
 const DRAW_W = W - 2*PAD, DRAW_H = H - 2*PAD;
 const AGENT_R = 0.1;
-const VEL_SCALE = 0.8; // visual scale for velocity line
+const velMax = (() => {
+  let m = 0;
+  for (let a = 0; a < DATA.length; a++)
+    for (let t = 0; t < DATA[a].length; t++) {
+      const [,,vx,vy] = DATA[a][t];
+      const v = Math.sqrt(vx*vx + vy*vy);
+      if (v > m) m = v;
+    }
+  return m || 1;
+})();
+const ARROW_MAX = 0.30;  // world-unit length of the fastest arrow
+const ARROW_EPS = 0.15;  // minimum fraction shown even when nearly stopped
 
 let t = 0, playing = false, speed = 4, animT = 0, lastTime = 0;
 
@@ -295,7 +306,8 @@ function drawAgent(a, time) {
   const vel = Math.sqrt(vx*vx + vy*vy);
   if (vel > 0.001) {
     const heading = Math.atan2(vy, vx);
-    const lineLen = worldToPx(vel * VEL_SCALE);
+    const norm = Math.min(vel / velMax, 1.0);
+    const lineLen = worldToPx(ARROW_MAX * (norm + ARROW_EPS));
     // Note: screen y is flipped, so negate vy component
     const ex = cx + Math.cos(heading) * lineLen;
     const ey = cy - Math.sin(heading) * lineLen; // flip y
