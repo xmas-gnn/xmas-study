@@ -362,7 +362,7 @@ function draw() {
 function animate(now) {
   if (!playing) return;
   if (!lastTime) lastTime = now;
-  const dt = (now - lastTime) / 1000;
+  const dt = Math.min((now - lastTime) / 1000, 0.1);
   lastTime = now;
   animT += dt * speed * 10;
   if (animT >= 71) { animT = 71; playing = false; updatePlayBtn(); }
@@ -385,6 +385,7 @@ function updatePlayBtn() {
   document.getElementById('playBtn').classList.toggle('active', playing);
 }
 
+document.addEventListener('visibilitychange', () => { if (!document.hidden) lastTime = 0; });
 function seekTo(val) { animT = val; draw(); }
 function stepFwd() { animT = Math.min(71, Math.floor(animT) + 1); draw(); }
 function stepBack() { animT = Math.max(0, Math.floor(animT) - 1); draw(); }
