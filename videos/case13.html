@@ -68,6 +68,39 @@
     accent-color: #3b82f6;
     height: 4px;
   }
+  /* Bracket markers for question time window (timesteps 40–63) on the seek slider */
+  .slider-wrap {
+    position: relative;
+    display: inline-block;
+    width: 220px;
+    vertical-align: middle;
+    line-height: 0;
+  }
+  .slider-wrap input[type=range] {
+    width: 100%;
+    margin: 0;
+    display: block;
+    position: relative;
+    z-index: 1;
+  }
+  .slider-bracket {
+    position: absolute;
+    top: 50%;
+    font-size: 22px;
+    line-height: 1;
+    font-weight: 700;
+    color: #e2b94a;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    text-shadow: 0 0 3px rgba(0,0,0,0.85);
+    z-index: 2;
+  }
+  .slider-window-label {
+    font-size: 10px;
+    color: #e2b94a;
+    margin-left: 6px;
+    letter-spacing: 0.04em;
+  }
   .info { font-size: 11px; color: #6b7280; }
   .info span { color: #c8c2b6; font-weight: 600; }
   .legend {
@@ -99,8 +132,12 @@
   <button id="playBtn" onclick="togglePlay()">▶ Play</button>
   <button onclick="stepBack()">◂ Step</button>
   <button onclick="stepFwd()">Step ▸</button>
-  <input type="range" id="slider" min="0" max="71" value="0" oninput="seekTo(+this.value)">
-  <div class="info">t = <span id="tLabel">0</span> / 71</div>
+  <span class="slider-wrap">
+    <span class="slider-bracket" style="left: 55.9%;" title="Question window starts at t=40">[</span>
+    <span class="slider-bracket" style="left: 86.3%;" title="Question window ends at t=63">]</span>
+    <input type="range" id="slider" min="0" max="71" value="0" oninput="seekTo(+this.value)">
+  </span>
+  <div class="info">t = <span id="tLabel">0</span> / 71 <span class="slider-window-label">· Q-window: 40–63</span></div>
 </div>
 
 <div class="controls">
