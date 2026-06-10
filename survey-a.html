@@ -224,6 +224,38 @@
     .thanks-card h2 { font-size: 1.6rem; color: #1e3a5f; margin-bottom: 12px; }
     .thanks-card p { color: #555; line-height: 1.7; }
 
+    /* ── Influence slider ── */
+    .influence-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: #ddd;
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+    .influence-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #4a90e2;
+      cursor: pointer;
+      border: 3px solid white;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.3);
+    }
+    .influence-slider::-moz-range-thumb {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #4a90e2;
+      cursor: pointer;
+      border: 3px solid white;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.3);
+    }
+
     @media (max-width: 768px) {
       .content-row { flex-direction: column; }
       .explanation-ab { flex-direction: column; }
@@ -294,6 +326,16 @@
       <div class="section-label">Demo Case</div>
       <div class="page-title">Familiarize yourself with the format</div>
     </div>
+    <div class="question-box">
+      <h3>Demo Question: Which agent reaches its goal first?</h3>
+      <div class="choices" data-key="demo">
+        <button class="choice-btn" onclick="selectChoice(this, 'demo', 'BLUE')"><strong style="color:blue">BLUE</strong></button>
+        <button class="choice-btn" onclick="selectChoice(this, 'demo', 'RED')"><strong style="color:red">RED</strong></button>
+        <button class="choice-btn" onclick="selectChoice(this, 'demo', 'YELLOW')"><strong style="color:#c8a000">YELLOW</strong></button>
+        <button class="choice-btn" onclick="selectChoice(this, 'demo', 'GREEN')"><strong style="color:green">GREEN</strong></button>
+      </div>
+    </div>
+    
     <div class="content-row">
       <div class="video-panel">
         <iframe src="videos/case15.html" style="width:100%;height:100%;min-height:320px;border:none;"></iframe>
@@ -305,7 +347,7 @@
           <li><strong>▶ Play / ⏸ Pause</strong> — start or pause the animation</li>
           <li><strong>◂ Step / Step ▸</strong> — jump backward or forward exactly one timestep; useful for examining a specific moment closely</li>
           <li><strong>Slider bar</strong> — drag to jump to any point in the episode instantly</li>
-          <li><strong>Speed buttons (0.5× 1× 2× 4×)</strong> — control how fast the animation plays; the default is 4×; use 0.5× or 1× to slow down and catch fine details</li>
+          <li><strong>Speed buttons (0.5× 1×)</strong> — control how fast the animation plays; the default is 1×; use 0.5× to slow down and catch fine details</li>
         </ul>
         <p><strong>Display options</strong></p>
         <ul style="padding-left:16px; line-height:2; color:#444; font-size:0.9rem; margin-bottom:10px;">
@@ -324,15 +366,6 @@
         <p style="color:#888; font-size:0.85rem;">Try the controls now using the demo video on the left, then answer the question below before proceeding.</p>
       </div>
     </div>
-    <div class="question-box">
-      <h3>Demo Question: Which agent reaches its goal first?</h3>
-      <div class="choices" data-key="demo">
-        <button class="choice-btn" onclick="selectChoice(this, 'demo', 'BLUE')"><strong style="color:blue">BLUE</strong></button>
-        <button class="choice-btn" onclick="selectChoice(this, 'demo', 'RED')"><strong style="color:red">RED</strong></button>
-        <button class="choice-btn" onclick="selectChoice(this, 'demo', 'YELLOW')"><strong style="color:#c8a000">YELLOW</strong></button>
-        <button class="choice-btn" onclick="selectChoice(this, 'demo', 'GREEN')"><strong style="color:green">GREEN</strong></button>
-      </div>
-    </div>
     <div id="demo-error" style="display:none; background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; padding:10px 16px; color:#b91c1c; font-size:0.9rem;">
       That's not quite right — watch the video again and look at which robot reaches its target (×) first, then select your answer.
     </div>
@@ -343,6 +376,36 @@
   </div>
 
   <!-- ══════════════════════════════════════════
+       PAGE 1.5 — DEMO CASE 2 (video 17)
+  ══════════════════════════════════════════ -->
+  <div class="page" id="page-1.5">
+    <div>
+      <div class="section-label">Demo Case</div>
+      <div class="page-title">Familiarize yourself with the format</div>
+    </div>
+    <div class="question-box">
+      <h3>Demo Question: Is there any collision in this demo video?</h3>
+      <div class="choices" data-key="demo2">
+        <button class="choice-btn" onclick="selectChoice(this, 'demo2', 'Yes')"><strong>Yes</strong></button>
+        <button class="choice-btn" onclick="selectChoice(this, 'demo2', 'No')"><strong>No</strong></button>
+      </div>
+    </div>
+    <div class="content-row">
+      <div class="video-panel">
+        <iframe src="videos/case17.html" style="width:100%;height:100%;min-height:320px;border:none;"></iframe>
+      </div>
+    </div>
+    <div id="demo2-error" style="display:none; background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; padding:10px 16px; color:#b91c1c; font-size:0.9rem;">
+      That's not quite right — watch the video again and look closely at whether any two robots touch or overlap, then select your answer.
+    </div>
+    <div class="nav-row">
+      <button class="nav-btn back" onclick="goTo(1)">← Back</button>
+      <button class="nav-btn next" onclick="checkDemo2()">Next →</button>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════
        PAGE 2 — OBJECTIVE Q1 (video 13)
        YELLOW's influence on agent RED
   ══════════════════════════════════════════ -->
@@ -351,6 +414,23 @@
       <div class="section-label">Objective Assessment — Question 1 of 4</div>
       <div class="page-title"><strong style="color:#c8a000">YELLOW</strong>'s influence on <strong style="color:red">RED</strong></div>
     </div>
+    <div class="question-box">
+      <h3>Based on the explanation, what is <strong style="color:#c8a000">YELLOW</strong>'s influence on <strong style="color:red">RED</strong> during timesteps 40–63?</h3>
+      <p style="font-size:0.85rem; color:#666; margin-bottom:20px;"><strong>1</strong> = most influence &nbsp;·&nbsp; <strong>0</strong> = no influence</p>
+      <div style="padding:0 8px;">
+        <div style="display:flex; justify-content:space-between; font-size:0.82rem; color:#888; margin-bottom:8px;">
+          <span>0 — No influence</span>
+          <span>Full influence — 1</span>
+        </div>
+        <input type="range" id="q1-slider" min="0" max="1" step="0.01" value="0.5"
+               oninput="handleSlider('q1', this.value)"
+               class="influence-slider">
+        <div id="q1-slider-display" style="text-align:center; margin-top:14px; font-size:0.95rem; color:#888; font-style:italic;">
+          Move the slider to select a value
+        </div>
+      </div>
+    </div>
+    
     <div class="content-row">
       <div class="video-panel">
         <iframe src="videos/case13.html" style="width:100%;height:100%;border:none;min-height:500px;"></iframe>
@@ -360,16 +440,6 @@
         <p>During timesteps 40–63, <strong style="color:red">RED</strong> is sweeping in a wide arc toward its goal and passes close to <strong style="color:#c8a000">YELLOW</strong>, who has already settled near its own destination. Since the robots can't physically see each other, <strong style="color:red">RED</strong> relies heavily on messages from <strong style="color:#c8a000">YELLOW</strong> through the communication network — giving it roughly half of its attention — to avoid a collision with the nearest neighbor.</p>
         <br>
         <p>Around timestep 64, <strong style="color:red">RED</strong> clears past <strong style="color:#c8a000">YELLOW</strong> and approaches its own goal, which happens to be right next to where <strong style="color:green">GREEN</strong> is parked — barely a gap between two robot bodies. <strong style="color:red">RED</strong>'s attention shifts sharply to <strong style="color:green">GREEN</strong>, climbing from a small fraction to over two-thirds by the end of the episode, because <strong style="color:green">GREEN</strong> is now the one it needs to avoid bumping into as it squeezes into its final position. In short, <strong style="color:red">RED</strong> always listens most to whichever teammate poses the biggest collision risk at that moment.</p>
-      </div>
-    </div>
-    <div class="question-box">
-      <h3>Based on the explanation, what is <strong style="color:#c8a000">YELLOW</strong>'s influence on <strong style="color:red">RED</strong> during timesteps 40–63?</h3>
-      <div class="choices" data-key="q1">
-        <button class="choice-btn" onclick="selectChoice(this, 'q1', '0')">No influence</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q1', '0.25')">Slight influence</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q1', '0.5')">Moderate influence</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q1', '0.75')">Strong influence</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q1', '1')">Full influence</button>
       </div>
     </div>
     <div class="nav-row">
@@ -386,17 +456,6 @@
     <div>
       <div class="section-label">Objective Assessment — Question 2 of 4</div>
       <div class="page-title">Predict <strong style="color:red">RED</strong>'s Trajectory</div>
-    </div>
-    <div class="content-row">
-      <div class="video-panel">
-        <iframe src="videos/case96.html" style="width:100%;height:100%;border:none;min-height:500px;"></iframe>
-      </div>
-      <div class="explanation-panel">
-        <h3>Explanation</h3>
-        <p><strong style="color:red">RED</strong>'s attention splits into two clear phases. Early on, <strong style="color:red">RED</strong> focuses heavily on <strong style="color:blue">BLUE</strong> — the closest neighbor as <strong style="color:red">RED</strong> begins moving upward from the bottom of the environment. But by around the quarter-mark of the episode, <strong style="color:red">RED</strong>'s attention shifts almost entirely to <strong style="color:green">GREEN</strong>, which commands roughly nine-tenths of <strong style="color:red">RED</strong>'s attention for the rest of the journey. <strong style="color:green">GREEN</strong> settles into its own goal position early and stays parked there for the remainder of the episode, sitting a moderate distance from where <strong style="color:red">RED</strong> needs to end up.</p>
-        <br>
-        <p>The fact that <strong style="color:red">RED</strong> locks onto <strong style="color:green">GREEN</strong> so strongly and for so long suggests <strong style="color:red">RED</strong>'s path needs to navigate carefully around where <strong style="color:green">GREEN</strong> is parked. <strong style="color:green">GREEN</strong> sits above and to the right of <strong style="color:red">RED</strong>'s goal, close enough that <strong style="color:red">RED</strong> can't simply take a straight line from start to finish without accounting for <strong style="color:green">GREEN</strong>'s presence. The sustained, dominant attention to a single stationary neighbor is a signature of a long approach toward a destination where a teammate is nearby — <strong style="color:red">RED</strong> is continuously adjusting its route based on <strong style="color:green">GREEN</strong>'s position to avoid conflict while still reaching its own goal.</p>
-      </div>
     </div>
     <div class="question-box">
       <h3>Predict <strong style="color:red">RED</strong>'s trajectory from start to goal:</h3>
@@ -428,6 +487,18 @@
       </div>
       <p style="font-size:0.78rem;color:#999;margin-top:6px;">● filled circle = start position &nbsp;·&nbsp; × = goal position</p>
     </div>
+    
+    <div class="content-row">
+      <div class="video-panel">
+        <iframe src="videos/case96.html" style="width:100%;height:100%;border:none;min-height:500px;"></iframe>
+      </div>
+      <div class="explanation-panel">
+        <h3>Explanation</h3>
+        <p><strong style="color:red">RED</strong>'s attention splits into two clear phases. Early on, <strong style="color:red">RED</strong> focuses heavily on <strong style="color:blue">BLUE</strong> — the closest neighbor as <strong style="color:red">RED</strong> begins moving upward from the bottom of the environment. But by around the quarter-mark of the episode, <strong style="color:red">RED</strong>'s attention shifts almost entirely to <strong style="color:green">GREEN</strong>, which commands roughly nine-tenths of <strong style="color:red">RED</strong>'s attention for the rest of the journey. <strong style="color:green">GREEN</strong> settles into its own goal position early and stays parked there for the remainder of the episode, sitting a moderate distance from where <strong style="color:red">RED</strong> needs to end up.</p>
+        <br>
+        <p>The fact that <strong style="color:red">RED</strong> locks onto <strong style="color:green">GREEN</strong> so strongly and for so long suggests <strong style="color:red">RED</strong>'s path needs to navigate carefully around where <strong style="color:green">GREEN</strong> is parked. <strong style="color:green">GREEN</strong> sits above and to the right of <strong style="color:red">RED</strong>'s goal, close enough that <strong style="color:red">RED</strong> can't simply take a straight line from start to finish without accounting for <strong style="color:green">GREEN</strong>'s presence. The sustained, dominant attention to a single stationary neighbor is a signature of a long approach toward a destination where a teammate is nearby — <strong style="color:red">RED</strong> is continuously adjusting its route based on <strong style="color:green">GREEN</strong>'s position to avoid conflict while still reaching its own goal.</p>
+      </div>
+    </div>
     <div class="nav-row">
       <button class="nav-btn back" onclick="goTo(2)">← Back</button>
       <button class="nav-btn next" onclick="requireAnswer('q2', 4)">Next →</button>
@@ -443,6 +514,16 @@
       <div class="section-label">Objective Assessment — Question 3 of 4</div>
       <div class="page-title">How Do <strong style="color:#c8a000">YELLOW</strong> &amp; <strong style="color:green">GREEN</strong> Reach Their Goals?</div>
     </div>
+    <div class="question-box">
+      <h3>Given the first half of the episode, how do you predict <strong style="color:#c8a000">YELLOW</strong> and <strong style="color:green">GREEN</strong> will navigate past each other on the way to their goals?</h3>
+      <div class="choices" data-key="q3">
+        <button class="choice-btn" onclick="selectChoice(this, 'q3', 'Both curve — YELLOW arcs up-left, GREEN arcs down-left')">Both curve to avoid each other — <strong style="color:#c8a000">YELLOW</strong> arcs upward-left, <strong style="color:green">GREEN</strong> arcs downward-left</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q3', 'YELLOW slows and waits; GREEN crosses first')"><strong style="color:#c8a000">YELLOW</strong> slows and waits while <strong style="color:green">GREEN</strong> crosses first, then continues to its goal</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q3', 'GREEN slows and waits; YELLOW crosses first')"><strong style="color:green">GREEN</strong> slows and waits while <strong style="color:#c8a000">YELLOW</strong> crosses first, then continues to its goal</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q3', 'Both travel straight without adjusting')">Both travel in straight lines without adjusting for each other</button>
+      </div>
+    </div>
+    
     <div class="content-row">
       <div class="video-panel">
         <iframe src="videos/case46.html" style="width:100%;height:100%;border:none;min-height:500px;"></iframe>
@@ -452,15 +533,6 @@
         <p>In the final moments shown, <strong style="color:#c8a000">YELLOW</strong> is accelerating and splits its attention between <strong style="color:blue">BLUE</strong> and <strong style="color:green">GREEN</strong> — but around timestep 29, <strong style="color:green">GREEN</strong> overtakes <strong style="color:blue">BLUE</strong> as <strong style="color:#c8a000">YELLOW</strong>'s top priority. <strong style="color:#c8a000">YELLOW</strong> had been focused primarily on <strong style="color:blue">BLUE</strong> (which is nearby and on a converging path), but as <strong style="color:green">GREEN</strong> closes in from the opposite direction, <strong style="color:#c8a000">YELLOW</strong>'s attention to <strong style="color:green">GREEN</strong> surges from a minor fraction to becoming its dominant signal. Despite this late shift, <strong style="color:#c8a000">YELLOW</strong> is still moving fast and has only just begun to "listen" to <strong style="color:green">GREEN</strong>.</p>
         <br>
         <p><strong style="color:green">GREEN</strong>, meanwhile, is also moving fast and paying most of its attention to <strong style="color:red">RED</strong> for much of the approach. It only pivots to focusing on <strong style="color:#c8a000">YELLOW</strong> in the last few timesteps — rising from a small share to becoming its dominant signal around timestep 26. The key concern here is that both agents recognized each other late: each was primarily watching a different teammate for most of the approach, and only switched attention to each other in the final moments, while both were already traveling at high speed on converging paths.</p>
-      </div>
-    </div>
-    <div class="question-box">
-      <h3>Given the first half of the episode, how do you predict <strong style="color:#c8a000">YELLOW</strong> and <strong style="color:green">GREEN</strong> will navigate past each other on the way to their goals?</h3>
-      <div class="choices" data-key="q3">
-        <button class="choice-btn" onclick="selectChoice(this, 'q3', 'Both curve — YELLOW arcs up-left, GREEN arcs down-left')">Both curve to avoid each other — <strong style="color:#c8a000">YELLOW</strong> arcs upward-left, <strong style="color:green">GREEN</strong> arcs downward-left</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q3', 'YELLOW slows and waits; GREEN crosses first')"><strong style="color:#c8a000">YELLOW</strong> slows and waits while <strong style="color:green">GREEN</strong> crosses first, then continues to its goal</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q3', 'GREEN slows and waits; YELLOW crosses first')"><strong style="color:green">GREEN</strong> slows and waits while <strong style="color:#c8a000">YELLOW</strong> crosses first, then continues to its goal</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q3', 'Both travel straight without adjusting')">Both travel in straight lines without adjusting for each other</button>
       </div>
     </div>
     <div class="nav-row">
@@ -478,6 +550,15 @@
       <div class="section-label">Objective Assessment — Question 4 of 4</div>
       <div class="page-title">Will <strong style="color:green">GREEN</strong> Reach Its Destination in Time?</div>
     </div>
+    <div class="question-box">
+      <h3>Will <strong style="color:green">GREEN</strong> reach its destination before the execution time runs out?</h3>
+      <div class="choices" data-key="q4">
+        <button class="choice-btn" onclick="selectChoice(this, 'q4', 'Yes')"><strong>Yes</strong> — it will reach its goal before time runs out</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q4', 'No')"><strong>No</strong> — it heads toward its goal but runs out of time before arriving</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q4', 'Never')"><strong>No</strong> — it stalls and never reaches its goal</button>
+      </div>
+    </div>
+    
     <div class="content-row">
       <div class="video-panel">
         <iframe src="videos/case1.html" style="width:100%;height:100%;border:none;min-height:500px;"></iframe>
@@ -487,14 +568,6 @@
         <p><strong style="color:green">GREEN</strong> starts the episode heading in roughly the right direction, with <strong style="color:blue">BLUE</strong> as its primary attention target. But as it approaches the middle of the environment around timestep 12, <strong style="color:#c8a000">YELLOW</strong> — who has already settled at its own goal — becomes <strong style="color:green">GREEN</strong>'s overwhelming focus, commanding over 80% of its attention for the rest of the episode. <strong style="color:green">GREEN</strong>'s heading visibly diverges from the direction of its goal: its goal lies below and to the left, but <strong style="color:green">GREEN</strong> curves upward and to the right instead, moving away from its destination with each step.</p>
         <br>
         <p>What's notable is that <strong style="color:green">GREEN</strong>'s distance to its own goal actually grows steadily after the early timesteps — it gets farther, not closer. <strong style="color:green">GREEN</strong> appears so consumed by its need to coordinate with <strong style="color:#c8a000">YELLOW</strong> that its trajectory bends around <strong style="color:#c8a000">YELLOW</strong>'s position rather than pushing through toward its own objective. </p>
-      </div>
-    </div>
-    <div class="question-box">
-      <h3>Will <strong style="color:green">GREEN</strong> reach its destination before the execution time runs out?</h3>
-      <div class="choices" data-key="q4">
-        <button class="choice-btn" onclick="selectChoice(this, 'q4', 'Yes')"><strong>Yes</strong> — it will reach its goal before time runs out</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q4', 'No')"><strong>No</strong> — it heads toward its goal but runs out of time before arriving</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q4', 'Never')"><strong>No</strong> — it stalls and never reaches its goal</button>
       </div>
     </div>
     <div class="nav-row">
@@ -512,6 +585,14 @@
       <div class="section-label">Subjective Assessment — Question 1 of 3</div>
       <div class="page-title">Which Explanation Contains More Useful Information?</div>
     </div>
+    <div class="question-box">
+      <h3>Which explanation contains more useful information?</h3>
+      <div class="choices" data-key="q5">
+        <button class="choice-btn" onclick="selectChoice(this, 'q5', 'A')">Explanation A</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q5', 'B')">Explanation B</button>
+      </div>
+    </div>
+    
     <div class="content-row">
       <div class="video-panel">
         <iframe src="videos/case61.html" style="width:100%;height:100%;min-height:320px;border:none;"></iframe>
@@ -533,13 +614,6 @@
         </div>
       </div>
     </div>
-    <div class="question-box">
-      <h3>Which explanation contains more useful information?</h3>
-      <div class="choices" data-key="q5">
-        <button class="choice-btn" onclick="selectChoice(this, 'q5', 'A')">Explanation A</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q5', 'B')">Explanation B</button>
-      </div>
-    </div>
     <div class="nav-row">
       <button class="nav-btn back" onclick="goTo(5)">← Back</button>
       <button class="nav-btn next" onclick="requireAnswer('q5', 7)">Next →</button>
@@ -555,6 +629,14 @@
       <div class="section-label">Subjective Assessment — Question 2 of 3</div>
       <div class="page-title">Which Explanation Is More Satisfying?</div>
     </div>
+    <div class="question-box">
+      <h3>Which explanation is more satisfying?</h3>
+      <div class="choices" data-key="q6">
+        <button class="choice-btn" onclick="selectChoice(this, 'q6', 'A')">Explanation A</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q6', 'B')">Explanation B</button>
+      </div>
+    </div>
+    
     <div class="content-row">
       <div class="video-panel">
         <iframe src="videos/case74.html" style="width:100%;height:100%;min-height:320px;border:none;"></iframe>
@@ -576,13 +658,6 @@
         </div>
       </div>
     </div>
-    <div class="question-box">
-      <h3>Which explanation is more satisfying?</h3>
-      <div class="choices" data-key="q6">
-        <button class="choice-btn" onclick="selectChoice(this, 'q6', 'A')">Explanation A</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q6', 'B')">Explanation B</button>
-      </div>
-    </div>
     <div class="nav-row">
       <button class="nav-btn back" onclick="goTo(6)">← Back</button>
       <button class="nav-btn next" onclick="requireAnswer('q6', 8)">Next →</button>
@@ -598,6 +673,14 @@
       <div class="section-label">Subjective Assessment — Question 3 of 3</div>
       <div class="page-title">Which Explanation Is More Helpful for Understanding?</div>
     </div>
+    <div class="question-box">
+      <h3>Which explanation is more helpful for your understanding of the situation?</h3>
+      <div class="choices" data-key="q7">
+        <button class="choice-btn" onclick="selectChoice(this, 'q7', 'A')">Explanation A</button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q7', 'B')">Explanation B</button>
+      </div>
+    </div>
+    
     <div class="content-row">
       <div class="video-panel">
         <iframe src="videos/case90.html" style="width:100%;height:100%;min-height:320px;border:none;"></iframe>
@@ -617,13 +700,6 @@
           <p>• <strong style="color:green">GREEN</strong>: starts lower-left (−0.57, −0.44) and moves almost straight up to its goal (−0.52, −0.05), arriving around timestep 20 and stopping. Early on it strongly attends to <strong style="color:red">RED</strong> (who starts right next to it heading the opposite way), then relaxes once they separate, maintaining moderate watch on <strong style="color:#c8a000">YELLOW</strong> afterward.</p>
           <p>• <strong style="color:red">RED</strong>: starts at (−0.36, −0.26) and must reach the far-right goal (0.40, −0.38). It takes a large upward arc before curving back down—a clear detour. Initially it heavily watches <strong style="color:green">GREEN</strong> (very close, conflicting path), then mid-episode monitors <strong style="color:blue">BLUE</strong> and <strong style="color:#c8a000">YELLOW</strong> as it crosses through the middle. Attention fades as it pulls away from everyone.</p>
           </div>
-      </div>
-    </div>
-    <div class="question-box">
-      <h3>Which explanation is more helpful for your understanding of the situation?</h3>
-      <div class="choices" data-key="q7">
-        <button class="choice-btn" onclick="selectChoice(this, 'q7', 'A')">Explanation A</button>
-        <button class="choice-btn" onclick="selectChoice(this, 'q7', 'B')">Explanation B</button>
       </div>
     </div>
     <div class="nav-row">
@@ -701,6 +777,16 @@
       return;
     }
     errorBox.style.display = 'none';
+    goTo(1.5);
+  }
+
+  function checkDemo2() {
+    const errorBox = document.getElementById('demo2-error');
+    if (answers['demo2'] !== 'Yes') {
+      errorBox.style.display = 'block';
+      return;
+    }
+    errorBox.style.display = 'none';
     goTo(0.5);
   }
 
@@ -737,13 +823,13 @@
   function updateProgress() {
     const questionPages = TOTAL_PAGES - 1; // pages 1–8
     const done = Math.max(0, currentPage - 1);
-    const pct = (currentPage === 0 || currentPage === 0.5) ? 0
+    const pct = (currentPage === 0 || currentPage === 0.5 || currentPage === 1.5) ? 0
                : currentPage >= TOTAL_PAGES ? 100
                : Math.round((done / (questionPages - 1)) * 100);
 
     document.getElementById('progressBar').style.width = pct + '%';
 
-    if (currentPage === 0 || currentPage === 0.5 || currentPage >= TOTAL_PAGES) {
+    if (currentPage === 0 || currentPage === 0.5 || currentPage === 1.5 || currentPage >= TOTAL_PAGES) {
       document.getElementById('progressText').textContent = '';
     } else {
       document.getElementById('progressText').textContent =
@@ -800,6 +886,27 @@
     }).catch(() => {
       goTo(10); // still show thanks even if network fails
     });
+  }
+
+  function handleSlider(key, rawVal) {
+    const val = parseFloat(rawVal).toFixed(2);
+    answers[key] = val;
+    const display = document.getElementById(key + '-slider-display');
+    if (display) {
+      const num = parseFloat(val);
+      let label;
+      if (num <= 0.10) label = 'No influence';
+      else if (num <= 0.30) label = 'Slight influence';
+      else if (num <= 0.60) label = 'Moderate influence';
+      else if (num <= 0.85) label = 'Strong influence';
+      else label = 'Full influence';
+      display.innerHTML = '<strong style="font-size:1.15rem;color:#1e3a5f;">' + val + '</strong> &nbsp;—&nbsp; ' + label;
+      display.style.fontStyle = 'normal';
+      display.style.color = '#333';
+    }
+    const curPage = document.getElementById('page-' + currentPage);
+    const errBox = curPage && curPage.querySelector('.answer-error');
+    if (errBox) errBox.style.display = 'none';
   }
 
   updateProgress();
