@@ -40,7 +40,7 @@ Focus on explaining why agent RED is paying attention during timestep 40-70. Con
 
 message = client.messages.create(
     model="claude-opus-4-6",
-    max_tokens=4096,
+    max_tokens=10000,
     temperature=0.2,
     system=system_prompt,
     messages=[

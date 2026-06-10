@@ -1,6 +1,6 @@
 import anthropic
 
-client = anthropic.Anthropic()
+client = anthropic.Anthropic(api_key="")
 
 with open("cases/nosubgraph/case96.csv", "r") as f:
     csv_content = f.read()
@@ -31,10 +31,16 @@ agent 1: YELLOW
 agent 2: GREEN
 agent 3: RED
 In this case, the user needs to predict agent RED's entire trajectory.
-Your job is to explain who RED is paying attention to and how that attention shifts over time.
-Do NOT describe RED's movement path, trajectory shape, or direction of travel — that is the answer the user must predict.
-Concise explanation. 2 paragraphs at most."""
-
+Your job is to explain who RED is paying attention to and how that attention shifts over time to aid the user to predict RED's trajectory.
+Even if you have the information of RED's trajectory- Do NOT describe RED's movement path, trajectory shape, or direction of travel.
+You are allow to describe other agents' trajectory however, if you wish.
+Concise explanation. 2 paragraphs at most.
+You must explain in neutral, non-dramatic tone.
+You must not write out agents' coordinates in numbers.
+You must not mention GNN since it is a technical term and this explanation is for non-technical people.
+Explain factually based on the given state action pairs of agents.
+Do not use () and em dash in your explanation.
+"""
 
 import time
 

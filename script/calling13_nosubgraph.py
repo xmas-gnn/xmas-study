@@ -1,6 +1,6 @@
 import anthropic
 
-client = anthropic.Anthropic()
+client = anthropic.Anthropic(api_key="")
 
 with open("cases/nosubgraph/case13.csv", "r") as f:
     csv_content = f.read()
@@ -30,34 +30,54 @@ agent 0: BLUE
 agent 1: YELLOW
 agent 2: GREEN
 agent 3: RED
-Focus on explaining why agent RED is paying attention during timestep 40-70. Concise explanation. 2 paragraphs at most"""
+Focus on explaining what is agent YELLOW, BLUE, and GREEN's influence on agent RED during timestep 40-70. Concise explanation. 2 paragraphs at most
+You must explain in neutral, non-dramatic tone.
+You must not write out agents' coordinates in numbers.
+You must not mention GNN since it is a technical term and this explanation is for non-technical people.
+Explain factually based on the given state action pairs of agents.
+Do not use () and em dash in your explanation.
+"""
 
-
-import time
-
-message = None
-for attempt in range(1, 4):
-    try:
-        with client.messages.stream(
-            model="claude-opus-4-6",
-            max_tokens=32000,
-            temperature=1,
-            system=system_prompt,
-            thinking={
+message = client.messages.create(
+    model="claude-opus-4-6",
+    max_tokens=16000,
+    thinking={
                 "type": "adaptive",
             },
-            messages=[
-                {"role": "user", "content": f"Here is the episode data:\n\n{csv_content}"}
-            ]
-        ) as stream:
-            message = stream.get_final_message()
-        break
-    except Exception as e:
-        print(f"Attempt {attempt} failed: {e}")
-        if attempt < 3:
-            time.sleep(3 * attempt)
+    system=system_prompt,
+    messages=[
+        {"role": "user", "content": f"Here is the episode data:\n\n{csv_content}"}
+    ]
+)
 
-if message:
-    for block in message.content:
-        if block.type == "text":
-            print(block.text)
+text_block = next(b for b in message.content if b.type == "text")
+print(text_block.text)
+
+# import timeY
+
+# message = None
+# for attempt in range(1, 4):
+#     try:
+#         with client.messages.stream(
+#             model="claude-opus-4-6",
+#             max_tokens=32000,
+#             temperature=1,
+#             system=system_prompt,
+#             thinking={
+#                 "type": "adaptive",
+#             },
+#             messages=[
+#                 {"role": "user", "content": f"Here is the episode data:\n\n{csv_content}"}
+#             ]
+#         ) as stream:
+#             message = stream.get_final_message()
+#         break
+#     except Exception as e:
+#         print(f"Attempt {attempt} failed: {e}")
+#         if attempt < 3:
+#             time.sleep(3 * attempt)
+
+# if message:
+#     for block in message.content:
+#         if block.type == "text":
+#             print(block.text)

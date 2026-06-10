@@ -1,6 +1,6 @@
 import anthropic
 
-client = anthropic.Anthropic()
+client = anthropic.Anthropic(api_key="")
 
 with open("cases/nosubgraph/case1.csv", "r") as f:
     csv_content = f.read()
@@ -30,10 +30,16 @@ agent 0: BLUE
 agent 1: YELLOW
 agent 2: GREEN
 agent 3: RED
-The user needs to predict whether GREEN will reach its goal before execution time runs out.
+The user (robot operator) needs to predict whether GREEN will reach its goal before execution time runs out.
 Your job is to explain who GREEN is paying attention to and how that attention shifts over time.
 Do NOT describe GREEN's movement path, whether it is heading toward or away from its goal, or whether its distance to the goal is increasing or decreasing — that is the answer the user must predict.
-Concise explanation. 2 paragraphs at most."""
+Concise explanation. 2 paragraphs at most.
+You must explain in neutral, non-dramatic tone.
+You must not write out agents' coordinates in numbers.
+You must not mention GNN since it is a technical term and this explanation is for non-technical people.
+Explain factually based on the given state action pairs of agents.
+Do not use () and em dash in your explanation.
+"""
 
 
 import time

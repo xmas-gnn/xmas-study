@@ -1,6 +1,6 @@
 import anthropic
 
-client = anthropic.Anthropic()
+client = anthropic.Anthropic(api_key="")
 
 with open("cases/nosubgraph/case46.csv", "r") as f:
     csv_content = f.read()
@@ -30,9 +30,17 @@ agent 0: BLUE
 agent 1: YELLOW
 agent 2: GREEN
 agent 3: RED
-In this case the user sees the moment right before agent yellow and green collided. 
+In this case the user (robot operator) sees the moment right before agent yellow and green collided. 
 The user's job is to predict whether a collision happened.
-Your job is to explain who agent yellow and green are paying attention to right before collision happened. Don't not say in the explanation whether or not collision happended or not. Concise explanation. 2 paragraphs at most"""
+Your job is to explain who agent yellow and green are paying attention to right before collision happened. 
+Don't not say in the explanation whether or not collision happended or not. 
+Concise explanation. 2 paragraphs at most
+You must explain in neutral, non-dramatic tone.
+You must not write out agents' coordinates in numbers.
+You must not mention GNN since it is a technical term and this explanation is for non-technical people.
+Explain factually based on the given state action pairs of agents.
+Do not use () and em dash in your explanation.
+"""
 
 
 import time
