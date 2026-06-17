@@ -31,8 +31,9 @@ agent 1: YELLOW
 agent 2: GREEN
 agent 3: RED
 In this case the user (robot operator) sees the moment right before agent yellow and green collided. 
+The video user sees is up until timestep 30. You have privilaged information. Do not disclose what happens after timestep 30.
 The user's job is to predict whether a collision happened.
-Your job is to explain who agent yellow and green are paying attention to right before collision happened. 
+Your job is to digest the state-action data attached in csv and provide an explanation to the user to aid them predict if there is a collision or not.
 Don't not say in the explanation whether or not collision happended or not. 
 Concise explanation. 2 paragraphs at most
 You must explain in neutral, non-dramatic tone.

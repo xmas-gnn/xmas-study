@@ -31,7 +31,7 @@ agent 1: YELLOW
 agent 2: GREEN
 agent 3: RED
 In this case, the user needs to predict agent RED's entire trajectory.
-Your job is to explain who RED is paying attention to and how that attention shifts over time to aid the user to predict RED's trajectory.
+Your job is to digest the state-action data attached in csv and provide an explanation to the user to aid them predicting RED's trajectory.
 Even if you have the information of RED's trajectory- Do NOT describe RED's movement path, trajectory shape, or direction of travel.
 You are allow to describe other agents' trajectory however, if you wish.
 Concise explanation. 2 paragraphs at most.
