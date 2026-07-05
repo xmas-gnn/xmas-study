@@ -14,7 +14,8 @@
       "Bash(sed -n '343,347p' /home/uchiwuwu/xmas-study/survey-b.html)",
       "Bash(sed -n '379,383p' /home/uchiwuwu/xmas-study/survey-b.html)",
       "Bash(sed -n '415,419p' /home/uchiwuwu/xmas-study/survey-b.html)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(python3)"
     ],
     "additionalDirectories": [
       "/home/uchiwuwu/xmas-study",

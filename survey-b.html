@@ -114,7 +114,7 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-    .explanation-panel p { color: #333; line-height: 1.6; font-size: 0.95rem; }
+    .explanation-panel p { color: #333; line-height: 1.6; font-size: 0.95rem; margin-bottom: 14px; }
 
     /* Subjective: two explanations side by side */
     .explanation-ab {
@@ -196,7 +196,7 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     }
     .intro-card h2 { font-size: 1.8rem; color: #1e3a5f; margin-bottom: 16px; }
-    .intro-card p { color: #555; line-height: 1.7; margin-bottom: 14px; }
+    .intro-card p { color: #555; line-height: 1.7; margin-bottom: 22px; }
     .intro-card ul { text-align: left; color: #444; line-height: 2; padding-left: 20px; margin-bottom: 20px; }
     .start-btn {
       margin-top: 10px;
@@ -294,12 +294,12 @@
       <br>
       <h4 style="color:#1e3a5f; margin-bottom:8px;">What You Will Do</h4>
       <ul style="line-height: 2.1; padding-left: 20px; color: #444;">
-        <li><strong>Two demo question</strong> — familiarize yourself with the video player; you must answer correctly to proceed</li>
-        <li><strong>Four prediction questions</strong> — watch a video clip and answer a question about what the robots do or will do next</li>
+        <li><strong>Two demo questions</strong> — familiarize yourself with the video player; you must answer correctly to proceed</li>
+        <li><strong>Five prediction questions</strong> — watch a video clip and answer a question about what the robots do or will do next</li>
         <li><strong>Three comparison questions</strong> — read two short written explanations of the same video and judge which you find more helpful</li>
       </ul>
 
-      <p style="margin-top:24px; color:#888; font-size:0.85rem; text-align:center;">9 questions total &nbsp;·&nbsp; You can revisit each question before the final submission</p>
+      <p style="margin-top:24px; color:#888; font-size:0.85rem; text-align:center;">10 questions total &nbsp;·&nbsp; You can revisit each question before the final submission</p>
       <div style="text-align:center;">
         <button class="start-btn" onclick="startSurvey()">Start Survey →</button>
       </div>
@@ -413,7 +413,7 @@
   ══════════════════════════════════════════ -->
   <div class="page" id="page-2">
     <div>
-      <div class="section-label">Objective Assessment — Question 1 of 4</div>
+      <div class="section-label">Objective Assessment — Question 1 of 5</div>
       <div class="page-title"><strong style="color:#c8a000">YELLOW</strong>'s influence on <strong style="color:red">RED</strong></div>
     </div>
     <div class="question-box">
@@ -455,7 +455,7 @@
   ══════════════════════════════════════════ -->
   <div class="page" id="page-3">
     <div>
-      <div class="section-label">Objective Assessment — Question 2 of 4</div>
+      <div class="section-label">Objective Assessment — Question 2 of 5</div>
       <div class="page-title">Predict <strong style="color:red">RED</strong>'s Trajectory</div>
     </div>
     <div class="question-box">
@@ -511,7 +511,7 @@
   ══════════════════════════════════════════ -->
   <div class="page" id="page-4">
     <div>
-      <div class="section-label">Objective Assessment — Question 3 of 4</div>
+      <div class="section-label">Objective Assessment — Question 3 of 5</div>
       <div class="page-title">How Do <strong style="color:#c8a000">YELLOW</strong> &amp; <strong style="color:green">GREEN</strong> Reach Their Goals?</div>
     </div>
     <div class="question-box">
@@ -541,12 +541,48 @@
   </div>
 
   <!-- ══════════════════════════════════════════
-       PAGE 5 — OBJECTIVE Q4 (video 1)
-       Will GREEN reach destination in time?
+       PAGE 5 — OBJECTIVE Q4 (video 2)
+       Arrival order
   ══════════════════════════════════════════ -->
   <div class="page" id="page-5">
     <div>
-      <div class="section-label">Objective Assessment — Question 4 of 4</div>
+      <div class="section-label">Objective Assessment — Question 4 of 5</div>
+      <div class="page-title">In What Order Do the Robots Reach Their Goals?</div>
+    </div>
+    <div class="question-box">
+      <h3>Based on the video and explanation, in what order do the robots reach their goals (first → last)?</h3>
+      <div class="choices" data-key="q8">
+        <button class="choice-btn" onclick="selectChoice(this, 'q8', 'YELLOW,RED,GREEN,BLUE')"><strong style="color:#c8a000">YELLOW</strong> → <strong style="color:red">RED</strong> → <strong style="color:green">GREEN</strong> → <strong style="color:blue">BLUE</strong></button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q8', 'YELLOW,GREEN,RED,BLUE')"><strong style="color:#c8a000">YELLOW</strong> → <strong style="color:green">GREEN</strong> → <strong style="color:red">RED</strong> → <strong style="color:blue">BLUE</strong></button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q8', 'GREEN,YELLOW,RED,BLUE')"><strong style="color:green">GREEN</strong> → <strong style="color:#c8a000">YELLOW</strong> → <strong style="color:red">RED</strong> → <strong style="color:blue">BLUE</strong></button>
+        <button class="choice-btn" onclick="selectChoice(this, 'q8', 'YELLOW,GREEN,BLUE,RED')"><strong style="color:#c8a000">YELLOW</strong> → <strong style="color:green">GREEN</strong> → <strong style="color:blue">BLUE</strong> → <strong style="color:red">RED</strong></button>
+      </div>
+    </div>
+    <div class="content-row">
+      <div class="video-panel">
+        <iframe src="videos/case2.html" style="width:100%;height:100%;border:none;min-height:500px;"></iframe>
+      </div>
+      <div class="explanation-panel">
+        <h3>Explanation</h3>
+        <p>• <strong style="color:blue">BLUE</strong>: Starts upper-center and needs to reach the lower-right. It sweeps in a wide rightward arc, overshooting east before curving back down-left toward its goal. Early on, <strong style="color:blue">BLUE</strong> likely watches <strong style="color:green">GREEN</strong> and <strong style="color:red">RED</strong> closely—both are crossing its general path—adjusting its arc to pass above/around them. It's still closing in on its goal at the episode's end.</p>
+        <p>• <strong style="color:#c8a000">YELLOW</strong>: Starts near center and heads left-down to a goal in the lower-left. It takes a fairly straight, fast path and arrives by about timestep 20, then parks. <strong style="color:#c8a000">YELLOW</strong> has the simplest route with few conflicts, so it likely pays only brief attention to others early on.</p>
+        <p>• <strong style="color:green">GREEN</strong>: Starts upper-right but its goal is center-left—yet it initially detours <em>rightward</em>, away from its goal. This wide clockwise loop strongly suggests <strong style="color:green">GREEN</strong> is watching <strong style="color:blue">BLUE</strong> (who is heading right) and swings behind <strong style="color:blue">BLUE</strong> to avoid a head-on crossing. After <strong style="color:blue">BLUE</strong> passes, <strong style="color:green">GREEN</strong> curves down and left, arriving around timestep 40.</p>
+        <p>• <strong style="color:red">RED</strong>: Starts at the left and needs to reach the upper-center-right. It takes a big upward arc, likely watching <strong style="color:blue">BLUE</strong> and <strong style="color:green">GREEN</strong> to stay clear of their crossing paths. It arrives around timestep 45, then holds position.</p>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="nav-btn back" onclick="goTo(4)">← Back</button>
+      <button class="nav-btn next" onclick="requireAnswer('q8', 6)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PAGE 5 — OBJECTIVE Q4 (video 1)
+       Will GREEN reach destination in time?
+  ══════════════════════════════════════════ -->
+  <div class="page" id="page-6">
+    <div>
+      <div class="section-label">Objective Assessment — Question 5 of 5</div>
       <div class="page-title">Will <strong style="color:green">GREEN</strong> Reach Its Destination in Time?</div>
     </div>
     <div class="question-box">
@@ -569,8 +605,8 @@
       </div>
     </div>
     <div class="nav-row">
-      <button class="nav-btn back" onclick="goTo(4)">← Back</button>
-      <button class="nav-btn next" onclick="requireAnswer('q4', 6)">Next →</button>
+      <button class="nav-btn back" onclick="goTo(5)">← Back</button>
+      <button class="nav-btn next" onclick="requireAnswer('q4', 7)">Next →</button>
     </div>
   </div>
 
@@ -578,7 +614,7 @@
        PAGE 6 — SUBJECTIVE Q1 (video 61)
        Which explanation is more useful?
   ══════════════════════════════════════════ -->
-  <div class="page" id="page-6">
+  <div class="page" id="page-7">
     <div>
       <div class="section-label">Subjective Assessment — Question 1 of 3</div>
       <div class="page-title">Which Explanation Contains More Useful Information?</div>
@@ -613,8 +649,8 @@
       </div>
     </div>
     <div class="nav-row">
-      <button class="nav-btn back" onclick="goTo(5)">← Back</button>
-      <button class="nav-btn next" onclick="requireAnswer('q5', 7)">Next →</button>
+      <button class="nav-btn back" onclick="goTo(6)">← Back</button>
+      <button class="nav-btn next" onclick="requireAnswer('q5', 8)">Next →</button>
     </div>
   </div>
 
@@ -622,7 +658,7 @@
        PAGE 7 — SUBJECTIVE Q2 (video 74)
        Which explanation is more satisfying?
   ══════════════════════════════════════════ -->
-  <div class="page" id="page-7">
+  <div class="page" id="page-8">
     <div>
       <div class="section-label">Subjective Assessment — Question 2 of 3</div>
       <div class="page-title">Which Explanation Is More Satisfying?</div>
@@ -657,8 +693,8 @@
       </div>
     </div>
     <div class="nav-row">
-      <button class="nav-btn back" onclick="goTo(6)">← Back</button>
-      <button class="nav-btn next" onclick="requireAnswer('q6', 8)">Next →</button>
+      <button class="nav-btn back" onclick="goTo(7)">← Back</button>
+      <button class="nav-btn next" onclick="requireAnswer('q6', 9)">Next →</button>
     </div>
   </div>
 
@@ -666,7 +702,7 @@
        PAGE 8 — SUBJECTIVE Q3 (video 90)
        Which explanation is more helpful?
   ══════════════════════════════════════════ -->
-  <div class="page" id="page-8">
+  <div class="page" id="page-9">
     <div>
       <div class="section-label">Subjective Assessment — Question 3 of 3</div>
       <div class="page-title">Which Explanation Is More Helpful for Understanding?</div>
@@ -701,15 +737,15 @@
       </div>
     </div>
     <div class="nav-row">
-      <button class="nav-btn back" onclick="goTo(7)">← Back</button>
-      <button class="nav-btn next" onclick="requireAnswer('q7', 9)">Next →</button>
+      <button class="nav-btn back" onclick="goTo(8)">← Back</button>
+      <button class="nav-btn next" onclick="requireAnswer('q7', 10)">Next →</button>
     </div>
   </div>
 
   <!-- ══════════════════════════════════════════
        PAGE 9 — INACCURACY REPORT
   ══════════════════════════════════════════ -->
-  <div class="page" id="page-9">
+  <div class="page" id="page-10">
     <div>
       <div class="section-label">Optional Feedback</div>
       <div class="page-title">Report Explanation Inaccuracies</div>
@@ -720,7 +756,7 @@
       <textarea id="inaccuracy-text" rows="6" style="width:100%;background:#1e1e2e;color:#e0e0f0;border:1px solid #555;border-radius:8px;padding:12px;font-size:0.95rem;resize:vertical;"></textarea>
     </div>
     <div class="nav-row">
-      <button class="nav-btn back" onclick="goTo(8)">← Back</button>
+      <button class="nav-btn back" onclick="goTo(9)">← Back</button>
       <button class="nav-btn next submit" onclick="submitSurvey()">Submit Survey ✓</button>
     </div>
   </div>
@@ -742,7 +778,7 @@
   <!-- ══════════════════════════════════════════
        PAGE 10 — THANK YOU
   ══════════════════════════════════════════ -->
-  <div class="page" id="page-10">
+  <div class="page" id="page-11">
     <div class="thanks-card">
       <div class="icon">✅</div>
       <h2>Thank you!</h2>
@@ -764,13 +800,14 @@
   <input type="hidden" name="q5_useful"          id="f-q5">
   <input type="hidden" name="q6_satisfying"      id="f-q6">
   <input type="hidden" name="q7_helpful"         id="f-q7">
+  <input type="hidden" name="q8_arrival_order" id="f-q8">
   <input type="hidden" name="inaccuracy_report"  id="f-inaccuracy">
   <input type="hidden" name="total_time_seconds" id="f-total-time">
   <input type="hidden" name="page_durations_json" id="f-page-durations">
 </form>
 
 <script>
-  const TOTAL_PAGES = 10; // 0 = intro, 10 = thanks
+  const TOTAL_PAGES = 11; // 0 = intro, 11 = thanks
   let currentPage = 0;
   const answers = {};
 
@@ -867,7 +904,7 @@
 
     // Page durations: time spent on each question page (1–9), in seconds
     const pageDurations = {};
-    for (let p = 1; p <= 9; p++) {
+    for (let p = 1; p <= 10; p++) {
       const enter = pageEnterTimes[p];
       const leave = pageEnterTimes[p + 1] || submitTime;
       if (enter) pageDurations['p' + p] = Math.round((leave - enter) / 1000);
@@ -882,6 +919,7 @@
     document.getElementById('f-q5').value   = answers['q5']   || '';
     document.getElementById('f-q6').value   = answers['q6']   || '';
     document.getElementById('f-q7').value   = answers['q7']   || '';
+    document.getElementById('f-q8').value   = answers['q8']   || '';
     document.getElementById('f-inaccuracy').value = (document.getElementById('inaccuracy-text').value || '').trim();
     document.getElementById('f-total-time').value   = totalSeconds !== null ? totalSeconds : '';
     document.getElementById('f-page-durations').value = JSON.stringify(pageDurations);
@@ -894,9 +932,9 @@
       body: data,
       headers: { 'Accept': 'application/json' }
     }).then(res => {
-      goTo(10);
+      goTo(11);
     }).catch(() => {
-      goTo(10); // still show thanks even if network fails
+      goTo(11); // still show thanks even if network fails
     });
   }
 
